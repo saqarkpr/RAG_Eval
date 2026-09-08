@@ -1,0 +1,54 @@
+[
+  {
+    "retriever": "bm25",
+    "accuracy": 0.5714285714285714,
+    "ece": 0.1732844100802419,
+    "brier": 0.26829866668663177,
+    "hallucination_rate": 0.125,
+    "hallucination_count": "2/16",
+    "false_abstention_rate": 0.18032786885245902,
+    "false_abstention_count": "11/61",
+    "evidence_grounding_rate": 1.0,
+    "evidence_grounding_count": "50/50",
+    "retrieval": {
+      "recall@1": 0.9836065573770492,
+      "recall@3": 0.9836065573770492,
+      "recall@5": 0.9836065573770492,
+      "mrr": 0.9836065573770492,
+      "n_queries": 61
+    },
+    "efficiency": {
+      "build_time_s": 0.0029271289999996952,
+      "mean_latency_ms": 0.13018412555026979,
+      "p95_latency_ms": 0.18788800002766948,
+      "approx_memory_kb": 384.5068359375,
+      "n_queries_timed": 231
+    }
+  },
+  {
+    "retriever": "tfidf_lsa",
+    "accuracy": 0.4935064935064935,
+    "ece": 0.1623514047772332,
+    "brier": 0.2617143527430001,
+    "hallucination_rate": 0.3125,
+    "hallucination_count": "5/16",
+    "false_abstention_rate": 0.29508196721311475,
+    "false_abstention_count": "18/61",
+    "evidence_grounding_rate": 0.9069767441860465,
+    "evidence_grounding_count": "39/43",
+    "retrieval": {
+      "recall@1": 0.8688524590163934,
+      "recall@3": 0.9672131147540983,
+      "recall@5": 0.9836065573770492,
+      "mrr": 0.9193989071038252,
+      "n_queries": 61
+    },
+    "efficiency": {
+      "build_time_s": 0.027542296999854443,
+      "mean_latency_ms": 0.6665215064931073,
+      "p95_latency_ms": 0.7256880001023092,
+      "approx_memory_kb": 197.625,
+      "n_queries_timed": 231
+    }
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "n_probed": 34,
+  "n_flipped_on_negation": 13,
+  "negation_flip_rate": 0.38235294117647056,
+  "note": "Diagnostic probe trained on all 77 items (not held out); measures whether the yes/no classifier's decision flips when a question's logical polarity is negated. A LOGICALLY SOUND classifier should flip on (nearly) every item, since negating the question's polarity negates the correct answer; a low flip rate means the classifier is tracking surface lexical cues rather than semantic polarity."
+}

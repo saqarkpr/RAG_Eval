@@ -1,0 +1,7 @@
+{
+  "build_time_s": 0.0029271289999996952,
+  "mean_latency_ms": 0.13018412555026979,
+  "p95_latency_ms": 0.18788800002766948,
+  "approx_memory_kb": 384.5068359375,
+  "n_queries_timed": 231
+}

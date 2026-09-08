@@ -1,0 +1,17 @@
+# Default hyperparameters / settings used to produce the reported results.
+# train.py currently takes these as CLI flags (--retriever, --seed, --k,
+# --n-splits); this file documents the exact values used for the numbers
+# in results/report.md so the run is reproducible without re-reading train.sh.
+
+retriever: bm25          # or: tfidf_lsa
+seed: 42
+top_k: 5                 # evidence passages retrieved per question
+n_splits: 5              # stratified CV folds for the cascaded classifier
+ece_bins: 10             # bins used for Expected Calibration Error
+
+tfidf_lsa:
+  n_components: 16       # truncated-SVD latent dimensionality
+
+data:
+  corpus: data/corpus.json
+  qa_benchmark: data/qa_benchmark.json

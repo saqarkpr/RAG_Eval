@@ -1,0 +1,274 @@
+[
+  {
+    "arxiv_id": "2501.09136",
+    "title": "Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG",
+    "cluster": "rag",
+    "is_survey": true,
+    "method_name": "Agentic RAG",
+    "abstract": "Large Language Models (LLMs) have advanced artificial intelligence by enabling human-like text generation and natural language understanding. However, their reliance on static training data limits their ability to respond to dynamic, real-time queries, resulting in outdated or inaccurate outputs. Retrieval-Augmented Generation (RAG) has emerged as a solution, enhancing LLMs by integrating real-time data retrieval to provide contextually relevant and up-to-date responses. Despite its promise, traditional RAG systems are constrained by static workflows and lack the adaptability required for multi-step reasoning and complex task management. Agentic Retrieval-Augmented Generation (Agentic RAG) transcends these limitations by embedding autonomous AI agents into the RAG pipeline. These agents leverage agentic design patterns reflection, planning, tool use, and multi-agent collaboration to dynamically manage retrieval strategies, iteratively refine contextual understanding, and adapt workflows through operational structures ranging from sequential steps to adaptive collaboration. This integration enables Agentic RAG systems to deliver flexibility, scalability, and context-awareness across diverse applications. This paper presents an analytical survey of Agentic RAG systems. It traces the evolution of RAG paradigms, introduces a principled taxonomy of Agentic RAG architectures based on agent cardinality, control structure, autonomy, and knowledge representation, and provides a comparative analysis of design trade-offs across existing frameworks. The survey examines applications in healthcare, finance, education, and enterprise document processing, and distills practical lessons for system designers and practitioners. Finally, it identifies key open research challenges related to evaluation, coordination, memory management, efficiency, and governance, outlining directions for future research."
+  },
+  {
+    "arxiv_id": "2402.19473",
+    "title": "Retrieval-Augmented Generation for AI-Generated Content: A Survey",
+    "cluster": "rag",
+    "is_survey": true,
+    "method_name": "RAG for AIGC",
+    "abstract": "Advancements in model algorithms, the growth of foundational models, and access to high-quality datasets have propelled the evolution of Artificial Intelligence Generated Content (AIGC). Despite its notable successes, AIGC still faces hurdles such as updating knowledge, handling long-tail data, mitigating data leakage, and managing high training and inference costs. Retrieval-Augmented Generation (RAG) has recently emerged as a paradigm to address such challenges. In particular, RAG introduces the information retrieval process, which enhances the generation process by retrieving relevant objects from available data stores, leading to higher accuracy and better robustness. In this paper, we comprehensively review existing efforts that integrate RAG technique into AIGC scenarios. We first classify RAG foundations according to how the retriever augments the generator, distilling the fundamental abstractions of the augmentation methodologies for various retrievers and generators. This unified perspective encompasses all RAG scenarios, illuminating advancements and pivotal technologies that help with potential future progress. We also summarize additional enhancements methods for RAG, facilitating effective engineering and implementation of RAG systems. Then from another view, we survey on practical applications of RAG across different modalities and tasks, offering valuable references for researchers and practitioners. Furthermore, we introduce the benchmarks for RAG, discuss the limitations of current RAG systems, and suggest potential directions for future research."
+  },
+  {
+    "arxiv_id": "2504.13079",
+    "title": "Retrieval-Augmented Generation with Conflicting Evidence",
+    "cluster": "rag",
+    "is_survey": false,
+    "method_name": "MADAM-RAG",
+    "abstract": "Large language model agents increasingly use retrieval-augmented generation to enhance factual accuracy. However, these systems must contend with ambiguous queries, conflicting information across sources, and noisy or irrelevant documents. Prior research addressed these challenges individually rather than jointly. The authors introduce two key contributions: RAMDocs, a dataset simulating realistic scenarios with ambiguity, misinformation, and noise, and MADAM-RAG, a multi-agent approach where LLM agents debate over the merits of an answer over multiple rounds. An aggregator then collates disambiguated responses while filtering misinformation. Testing on AmbigDocs and FaithEval benchmarks shows improvements of up to 11.40% and 15.80% respectively over baseline RAG systems using Llama3.3-70B-Instruct. However, RAMDocs presents significant challenges, with baseline models achieving only 32.60 exact match scores. The analysis reveals substantial performance gaps persist, particularly when evidence imbalance and misinformation levels increase."
+  },
+  {
+    "arxiv_id": "2005.11401",
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "cluster": "rag",
+    "is_survey": false,
+    "method_name": "RAG",
+    "abstract": "Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when fine-tuned on downstream NLP tasks. However, their ability to access and precisely manipulate knowledge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-specific architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre-trained models with a differentiable access mechanism to explicit non-parametric memory can overcome this issue, but have so far been only investigated for extractive downstream tasks. We explore a general-purpose fine-tuning recipe for retrieval-augmented generation (RAG) -- models which combine pre-trained parametric and non-parametric memory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We compare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, the other can use different passages per token. We fine-tune and evaluate our models on a wide range of knowledge-intensive NLP tasks and set the state-of-the-art on three open domain QA tasks, outperforming parametric seq2seq models and task-specific retrieve-and-extract architectures. For language generation tasks, we find that RAG models generate more specific, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline."
+  },
+  {
+    "arxiv_id": "2410.12837",
+    "title": "A Comprehensive Survey of Retrieval-Augmented Generation (RAG): Evolution, Current Landscape and Future Directions",
+    "cluster": "rag",
+    "is_survey": true,
+    "method_name": "RAG survey",
+    "abstract": "This paper presents a comprehensive study of Retrieval-Augmented Generation (RAG), tracing its evolution from foundational concepts to the current state of the art. RAG combines retrieval mechanisms with generative language models to enhance the accuracy of outputs, addressing key limitations of LLMs. The study explores the basic architecture of RAG, focusing on how retrieval and generation are integrated to handle knowledge-intensive tasks. A detailed review of the significant technological advancements in RAG is provided, including key innovations in retrieval-augmented language models and applications across various domains such as question-answering, summarization, and knowledge-based tasks. Recent research breakthroughs are discussed, highlighting novel methods for improving retrieval efficiency. Furthermore, the paper examines ongoing challenges such as scalability, bias, and ethical concerns in deployment. Future research directions are proposed, focusing on improving the robustness of RAG models, expanding the scope of application of RAG models, and addressing societal implications. This survey aims to serve as a foundational resource for researchers and practitioners in understanding the potential of RAG and its trajectory in natural language processing."
+  },
+  {
+    "arxiv_id": "2312.10997",
+    "title": "Retrieval-Augmented Generation for Large Language Models: A Survey",
+    "cluster": "rag",
+    "is_survey": true,
+    "method_name": "RAG survey",
+    "abstract": "Large Language Models demonstrate impressive capabilities but face challenges including hallucination, outdated knowledge, and non-transparent reasoning. Retrieval-Augmented Generation (RAG) addresses these issues by integrating external database knowledge, enhancing accuracy for knowledge-intensive tasks while enabling continuous updates and domain-specific integration. This survey examines RAG's evolution across three paradigms: Naive RAG, Advanced RAG, and Modular RAG. It analyzes the core tripartite foundation comprising retrieval, generation, and augmentation techniques, highlighting state-of-the-art technologies in each component. The paper also presents current evaluation frameworks and benchmarks while identifying existing challenges and future research directions."
+  },
+  {
+    "arxiv_id": "2503.15850",
+    "title": "Uncertainty Quantification and Confidence Calibration in Large Language Models: A Survey",
+    "cluster": "calibration",
+    "is_survey": true,
+    "method_name": "UQ taxonomy",
+    "abstract": "Large Language Models excel in text generation, reasoning, and decision-making, enabling adoption in high-stakes domains like healthcare, law, and transportation. However, reliability remains a significant concern, as these systems often generate plausible yet inaccurate responses. Uncertainty quantification enhances trustworthiness by estimating output confidence, facilitating risk mitigation and selective prediction. Traditional uncertainty methods struggle with LLMs due to computational constraints and decoding inconsistencies. LLMs introduce distinctive uncertainty sources: input ambiguity, reasoning path divergence, and decoding stochasticity, that extend beyond classical uncertainty frameworks. The authors present a new taxonomy categorizing uncertainty quantification methods by computational efficiency and uncertainty dimensions (input, reasoning, parameter, and prediction uncertainty). They evaluate existing approaches, assess practical applicability, and identify open challenges, advocating for scalable, interpretable, and robust methods to strengthen LLM dependability."
+  },
+  {
+    "arxiv_id": "2505.23854",
+    "title": "Revisiting Uncertainty Estimation and Calibration of Large Language Models",
+    "cluster": "calibration",
+    "is_survey": false,
+    "method_name": "LVU (linguistic verbal uncertainty)",
+    "abstract": "As large language models (LLMs) are increasingly deployed in high-stakes applications, robust uncertainty estimation is essential for ensuring the safe and trustworthy deployment of LLMs. We present the most comprehensive study to date of uncertainty estimation in LLMs, evaluating 80 models spanning open- and closed-source families, dense and Mixture-of-Experts (MoE) architectures, reasoning and non-reasoning modes, quantization variants and parameter scales from 0.6B to 671B. Focusing on three representative black-box single-pass methods, including token probability-based uncertainty (TPU), numerical verbal uncertainty (NVU), and linguistic verbal uncertainty (LVU), we systematically evaluate uncertainty calibration and selective classification using the challenging MMLU-Pro benchmark, which covers both reasoning-intensive and knowledge-based tasks. Our results show that LVU consistently outperforms TPU and NVU, offering stronger calibration and discrimination while being more interpretable. We also find that high accuracy does not imply reliable uncertainty, and that model scale, post-training, reasoning ability and quantization all influence estimation performance. Notably, LLMs exhibit better uncertainty estimates on reasoning tasks than on knowledge-heavy ones, and good calibration does not necessarily translate to effective error ranking. These findings highlight the need for multi-perspective evaluation and position LVU as a practical tool for improving the reliability of LLMs in real-world settings."
+  },
+  {
+    "arxiv_id": "2602.00279",
+    "title": "Benchmarking Uncertainty Calibration in Large Language Model Long-Form Question Answering",
+    "cluster": "calibration",
+    "is_survey": false,
+    "method_name": "answer frequency consistency",
+    "abstract": "Large Language Models are frequently employed in Question Answering tasks, particularly within scientific domains. The researchers introduced the first large-scale benchmark for evaluating UQ metrics in reasoning-demanding QA with an extensible framework. Their investigation examined up to 20 LLM variants across seven scientific datasets, analyzing 685,000 responses. Key findings revealed that instruction tuning causes probability mass polarization, reducing the reliability of token-level confidences, while answer frequency consistency provided superior calibration compared to verbalized uncertainty approaches. The study also highlighted pitfalls in relying exclusively on Expected Calibration Error as a performance metric."
+  },
+  {
+    "arxiv_id": "2511.10645",
+    "title": "ParoQuant: Pairwise Rotation Quantization for Efficient Reasoning LLM Inference",
+    "cluster": "efficiency",
+    "is_survey": false,
+    "method_name": "ParoQuant",
+    "abstract": "Post-training quantization compresses weights and activations of large language models into low-precision representations to reduce memory footprint and accelerate inference. However, outliers in weights and activations often lead to large quantization errors and severe accuracy degradation, particularly in reasoning LLMs where errors accumulate across extended chains of thought. Existing PTQ methods either insufficiently suppress outliers or introduce significant inference overhead. The authors propose ParoQuant, which combines hardware-efficient Givens rotations with channel-wise scaling to even out magnitude distributions across channels and narrow dynamic range within quantization groups. An inference kernel is co-designed to exploit GPU parallelism while maintaining lightweight rotations and scaling at runtime. Under weight-only quantization, ParoQuant achieves an average 2.4% accuracy improvement over AWQ on reasoning tasks with less than 10% overhead and matches state-of-the-art weight-activation quantization methods, enabling more efficient deployment of reasoning LLMs."
+  },
+  {
+    "arxiv_id": "2408.08554",
+    "title": "ABQ-LLM: Arbitrary-Bit Quantized Inference Acceleration for Large Language Models",
+    "cluster": "efficiency",
+    "is_survey": false,
+    "method_name": "ABQ-LLM",
+    "abstract": "Large Language Models (LLMs) have revolutionized natural language processing tasks. However, their practical application is constrained by substantial memory and computational demands. Post-training quantization (PTQ) is considered an effective method to accelerate LLM inference. Despite its growing popularity in LLM model compression, PTQ deployment faces two major challenges. First, low-bit quantization leads to performance degradation. Second, restricted by the limited integer computing unit type on GPUs, quantized matrix operations with different precisions cannot be effectively accelerated. To address these issues, we introduce a novel arbitrary-bit quantization algorithm and inference framework, ABQ-LLM. It achieves superior performance across various quantization settings and enables efficient arbitrary-precision quantized inference on the GPU. ABQ-LLM introduces several key innovations: (1) a distribution correction method for transformer blocks to mitigate distribution differences caused by full quantization of weights and activations, improving performance at low bit-widths. (2) the bit balance strategy to counteract performance degradation from asymmetric distribution issues at very low bit-widths (e.g., 2-bit). (3) an innovative quantization acceleration framework that reconstructs the quantization matrix multiplication of arbitrary precision combinations based on BTC (Binary TensorCore) equivalents, gets rid of the limitations of INT4/INT8 computing units. ABQ-LLM can convert each component bit width gain into actual acceleration gain, maximizing performance under mixed precision (e.g., W6A6, W2A8). Based on W2*A8 quantization configuration on LLaMA-7B model, it achieved a WikiText2 perplexity of 7.59 (2.17 lower vs 9.76 in AffineQuant). Compared to SmoothQuant, we realized 1.6x acceleration improvement and 2.7x memory compression gain."
+  },
+  {
+    "arxiv_id": "2405.17849",
+    "title": "I-LLM: Efficient Integer-Only Inference for Fully-Quantized Low-Bit Large Language Models",
+    "cluster": "efficiency",
+    "is_survey": false,
+    "method_name": "I-LLM",
+    "abstract": "Post-training quantization (PTQ) serves as a potent technique to accelerate the inference of large language models (LLMs). Nonetheless, existing works still necessitate a considerable number of floating-point (FP) operations during inference, including additional quantization and de-quantization, as well as non-linear operators such as RMSNorm and Softmax. This limitation hinders the deployment of LLMs on the edge and cloud devices. In this paper, we identify the primary obstacle to integer-only quantization for LLMs lies in the large fluctuation of activations across channels and tokens in both linear and non-linear operations. To address this issue, we propose I-LLM, a novel integer-only fully-quantized PTQ framework tailored for LLMs. Specifically, (1) we develop Fully-Smooth Block-Reconstruction (FSBR) to aggressively smooth inter-channel variations of all activations and weights. (2) to alleviate degradation caused by inter-token variations, we introduce a novel approach called Dynamic Integer-only MatMul (DI-MatMul). This method enables dynamic quantization in full-integer matrix multiplication by dynamically quantizing the input and outputs with integer-only operations. (3) we design DI-ClippedSoftmax, DI-Exp, and DI-Normalization, which utilize bit shift to execute non-linear operators efficiently while maintaining accuracy. The experiment shows that our I-LLM achieves comparable accuracy to the FP baseline and outperforms non-integer quantization methods. For example, I-LLM can operate at W4A4 with negligible loss of accuracy."
+  },
+  {
+    "arxiv_id": "2411.16158",
+    "title": "MixPE: A Specialized Mixed-Precision Processing Element for Efficient Low-Bit Quantization in LLM Inference",
+    "cluster": "efficiency",
+    "is_survey": false,
+    "method_name": "MixPE",
+    "abstract": "Transformer-based large language models (LLMs) have achieved remarkable success as model sizes continue to grow, yet their deployment remains challenging due to significant computational and memory demands. Quantization has emerged as a promising solution, and state-of-the-art quantization algorithms for LLMs introduce the need for mixed-precision matrix multiplication (mpGEMM), where lower-precision weights are multiplied with higher-precision activations. Despite its benefits, current hardware accelerators such as GPUs and TPUs lack native support for efficient mpGEMM, leading to inefficient dequantization operations in the main sequential loop. To address this limitation, we introduce MixPE, a specialized mixed-precision processing element designed for efficient low-bit quantization in LLM inference. MixPE leverages two key innovations to minimize dequantization overhead and unlock the full potential of low-bit quantization. First, recognizing that scale and zero point are shared within each quantization group, we propose performing dequantization after per-group mpGEMM, significantly reducing dequantization overhead. Second, instead of relying on conventional multipliers, MixPE utilizes efficient shift-and-add operations for multiplication, optimizing both computation and energy efficiency. Our experimental results demonstrate that MixPE surpasses the state-of-the-art quantization accelerators by 2.6x speedup and 1.4x energy reduction."
+  },
+  {
+    "arxiv_id": "2607.10476",
+    "title": "Hallucination Detection in Large Language Models Using Diversion Decoding",
+    "cluster": "hallucination",
+    "is_survey": false,
+    "method_name": "diversion decoding",
+    "abstract": "Large language models have become powerful tools for knowledge retrieval through natural interactions. However, they tend to generate factually incorrect statements and fabricate information, reducing their reliability. Existing hallucination detection methods are often probabilistic and computationally expensive. This paper introduces diversion decoding, which develops an uncertainty measure by actively challenging model responses during decoding. The method extracts features capturing the model's resistance to producing alternative answers, then trains a machine-learning classifier to estimate uncertainty. Experimental results show diversion decoding outperforms existing approaches while requiring significantly less computational resources, offering an efficient solution for hallucination detection."
+  },
+  {
+    "arxiv_id": "2502.15844",
+    "title": "Hallucination Detection in Large Language Models with Metamorphic Relations",
+    "cluster": "hallucination",
+    "is_survey": false,
+    "method_name": "MetaQA",
+    "abstract": "Large Language Models (LLMs) are prone to hallucinations, e.g., factually incorrect information, in their responses. Existing detection methods rely on external resources with limitations, while others depend on inaccessible probability outputs from closed-source models. The paper introduces MetaQA, which operates independently without external resources and functions with both proprietary and open-source LLMs. The approach applies metamorphic relations and prompt mutation, based on the premise that if an LLM's response is a hallucination, the designed metamorphic relations will be violated. Comparative testing against SelfCheckGPT across multiple datasets and four different language models shows substantial improvements, with F1-score enhancements ranging up to 112.2% on certain models."
+  },
+  {
+    "arxiv_id": "2512.20949",
+    "title": "Neural Probe-Based Hallucination Detection for Large Language Models",
+    "cluster": "hallucination",
+    "is_survey": false,
+    "method_name": "MLP probes",
+    "abstract": "Large language models (LLMs) excel at text generation and knowledge question-answering tasks, but they are prone to generating hallucinated content, severely limiting their application in high-risk domains. Current hallucination detection methods based on uncertainty estimation and external knowledge retrieval suffer from the limitation that they still produce erroneous content at high confidence levels and rely heavily on retrieval efficiency and knowledge coverage. In contrast, probe methods that leverage the model's hidden-layer states offer real-time and lightweight advantages. However, traditional linear probes struggle to capture nonlinear structures in deep semantic spaces. To overcome these limitations, we propose a neural network-based framework for token-level hallucination detection. By freezing language model parameters, we employ lightweight MLP probes to perform nonlinear modeling of high-level hidden states. A multi-objective joint loss function is designed to enhance detection stability and semantic disambiguity. Additionally, we establish a layer position-probe performance response model, using Bayesian optimization to automatically search for optimal probe insertion layers and achieve superior training results. Experimental results on LongFact, HealthBench, and TriviaQA demonstrate that MLP probes significantly outperform state-of-the-art methods in accuracy, recall, and detection capability under low false-positive conditions."
+  },
+  {
+    "arxiv_id": "2601.09929",
+    "title": "Hallucination Detection and Mitigation in Large Language Models",
+    "cluster": "hallucination",
+    "is_survey": false,
+    "method_name": "tiered hallucination management framework",
+    "abstract": "Large Language Models (LLMs) and Large Reasoning Models (LRMs) offer transformative potential for high-stakes domains like finance and law, but their tendency to hallucinate, generating factually incorrect or unsupported content, poses a critical reliability risk. This paper introduces a comprehensive operational framework for hallucination management, built on a continuous improvement cycle driven by root cause awareness. We categorize hallucination sources into model, data, and context-related factors, allowing targeted interventions over generic fixes. The framework integrates multi-faceted detection methods (e.g., uncertainty estimation, reasoning consistency) with stratified mitigation strategies (e.g., knowledge grounding, confidence calibration). We demonstrate its application through a tiered architecture and a financial data extraction case study, where model, context, and data tiers form a closed feedback loop for progressive reliability enhancement."
+  },
+  {
+    "arxiv_id": "2507.22915",
+    "title": "Theoretical Foundations and Mitigation of Hallucination in Large Language Models",
+    "cluster": "hallucination",
+    "is_survey": false,
+    "method_name": "PAC-Bayes hallucination risk bound",
+    "abstract": "Hallucination in Large Language Models (LLMs) refers to the generation of content that is not faithful to the input or the real-world facts. This paper provides a rigorous treatment of hallucination in LLMs, including formal definitions and theoretical analyses. We distinguish between intrinsic and extrinsic hallucinations, and define a hallucination risk for models. We derive bounds on this risk using learning-theoretic frameworks (PAC-Bayes and Rademacher complexity). We then survey detection strategies for hallucinations, such as token-level uncertainty estimation, confidence calibration, and attention alignment checks. On the mitigation side, we discuss approaches including retrieval-augmented generation, hallucination-aware fine-tuning, logit calibration, and the incorporation of fact-verification modules. We propose a unified detection and mitigation workflow, illustrated with a diagram, to integrate these strategies."
+  },
+  {
+    "arxiv_id": "2311.05232",
+    "title": "A Survey on Hallucination in Large Language Models: Principles, Taxonomy, Challenges, and Open Questions",
+    "cluster": "hallucination",
+    "is_survey": true,
+    "method_name": "hallucination taxonomy",
+    "abstract": "The emergence of large language models (LLMs) has marked a significant breakthrough in natural language processing (NLP), fueling a paradigm shift in information acquisition. Nevertheless, LLMs are prone to hallucination, generating plausible yet nonfactual content. This phenomenon raises significant concerns over the reliability of LLMs in real-world information retrieval (IR) systems and has attracted intensive research to detect and mitigate such hallucinations. Given the open-ended general-purpose attributes inherent to LLMs, LLM hallucinations present distinct challenges that diverge from prior task-specific models. This divergence highlights the urgency for a nuanced understanding and comprehensive overview of recent advances in LLM hallucinations. In this survey, we begin with an innovative taxonomy of hallucination in the era of LLM and then delve into the factors contributing to hallucinations. Subsequently, we present a thorough overview of hallucination detection methods and benchmarks. Our discussion then transfers to representative methodologies for mitigating LLM hallucinations. Additionally, we delve into the current limitations faced by retrieval-augmented LLMs in combating hallucinations, offering insights for developing more robust IR systems."
+  },
+  {
+    "arxiv_id": "2212.07677",
+    "title": "Transformers learn in-context by gradient descent",
+    "cluster": "in_context_learning",
+    "is_survey": false,
+    "method_name": "mesa-optimization",
+    "abstract": "The paper proposes that training Transformers with auto-regressive objectives relates closely to gradient-based meta-learning. The authors demonstrate the equivalence of data transformations induced by a single linear self-attention layer and by gradient-descent (GD) on a regression loss. Through empirical analysis of self-attention-only Transformers on regression tasks, they show these models function as mesa-optimizers that perform gradient descent during inference. This mechanistic understanding explains in-context learning in regression domains. The work further reveals how Transformers exceed standard gradient descent performance by learning iterative curvature correction and applying linear models to deep representations for nonlinear tasks. The authors also connect their findings to induction heads, framing them as instances of gradient-descent-based in-context learning within Transformers."
+  },
+  {
+    "arxiv_id": "2503.15579",
+    "title": "Understanding the Generalization of In-Context Learning in Transformers: An Empirical Study",
+    "cluster": "in_context_learning",
+    "is_survey": false,
+    "method_name": "task-centric generalization framework",
+    "abstract": "Large language models (LLMs) like GPT-4 and LLaMA-3 utilize the powerful in-context learning (ICL) capability of Transformer architecture to learn on the fly from limited examples. While ICL underpins many LLM applications, its full potential remains hindered by a limited understanding of its generalization boundaries and vulnerabilities. We present a systematic investigation of transformers' generalization capability with ICL relative to training data coverage by defining a task-centric framework along three dimensions: inter-problem, intra-problem, and intra-task generalization. Through extensive simulation and real-world experiments, encompassing tasks such as function fitting, API calling, and translation, we find that transformers lack inter-problem generalization with ICL, but excel in intra-task and intra-problem generalization. When the training data includes a greater variety of mixed tasks, it significantly enhances the generalization ability of ICL on unseen tasks and even on known simple tasks."
+  },
+  {
+    "arxiv_id": "2406.13493",
+    "title": "In-Context In-Context Learning with Transformer Neural Processes",
+    "cluster": "in_context_learning",
+    "is_survey": false,
+    "method_name": "ICICL-TNP",
+    "abstract": "Neural processes (NPs) are a powerful family of meta-learning models that seek to approximate the posterior predictive map of the ground-truth stochastic process from which each dataset in a meta-dataset is sampled. The paper addresses the challenge of conditioning on multiple related datasets by introducing the ICICL-TNP, which builds on the family of PT-TNPs, which utilise pseudo-token-based transformer architectures to sidestep the quadratic computational complexity associated with regular transformer architectures. Unlike standard approaches such as ConvCNP or TNPs, this model enables conditioning on both sets of datapoints and sets of datasets."
+  },
+  {
+    "arxiv_id": "2404.13846",
+    "title": "Filtered Direct Preference Optimization",
+    "cluster": "preference_optimization",
+    "is_survey": false,
+    "method_name": "fDPO",
+    "abstract": "Reinforcement learning from human feedback (RLHF) plays a crucial role in aligning language models with human preferences. While the significance of dataset quality is generally recognized, explicit investigations into its impact within the RLHF framework, to our knowledge, have been limited. This paper addresses the issue of text quality within the preference dataset by focusing on direct preference optimization (DPO), an increasingly adopted reward-model-free RLHF method. We confirm that text quality significantly influences the performance of models optimized with DPO more than those optimized with reward-model-based RLHF. Building on this new insight, we propose an extension of DPO, termed filtered direct preference optimization (fDPO). fDPO uses a trained reward model to monitor the quality of texts within the preference dataset during DPO training. Samples of lower quality are discarded based on comparisons with texts generated by the model being optimized, resulting in a more accurate dataset. Experimental results demonstrate that fDPO enhances the final model performance."
+  },
+  {
+    "arxiv_id": "2305.18290",
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "cluster": "preference_optimization",
+    "is_survey": false,
+    "method_name": "DPO",
+    "abstract": "While large-scale unsupervised language models learn broad world knowledge and reasoning skills, controlling their behavior precisely is challenging due to their unsupervised training nature. Current methods collect human preference labels and fine-tune models using reinforcement learning from human feedback (RLHF), which involves fitting a reward model and then using reinforcement learning to optimize it, a complex and often unstable process. This paper introduces Direct Preference Optimization (DPO), which reparameterizes the reward model in RLHF to enable closed-form extraction of the optimal policy. This allows solving the standard RLHF problem using only a simple classification loss. DPO is stable, performant, and computationally efficient, eliminating the need for language model sampling during fine-tuning or extensive hyperparameter adjustment. Experimental results demonstrate that DPO aligns language models with human preferences as effectively as or better than existing methods, outperforming PPO-based RLHF in sentiment control while matching or improving response quality in summarization and dialogue tasks, all while being substantially simpler to implement and train."
+  },
+  {
+    "arxiv_id": "2402.03300",
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+    "cluster": "preference_optimization",
+    "is_survey": false,
+    "method_name": "GRPO",
+    "abstract": "Mathematical reasoning poses a significant challenge for language models due to its complex and structured nature. In this paper, we introduce DeepSeekMath 7B, which continues pre-training DeepSeek-Coder-Base-v1.5 7B with 120B math-related tokens sourced from Common Crawl, together with natural language and code data. DeepSeekMath 7B has achieved an impressive score of 51.7% on the competition-level MATH benchmark without relying on external toolkits and voting techniques, approaching the performance level of Gemini-Ultra and GPT-4. Self-consistency over 64 samples from DeepSeekMath 7B achieves 60.9% on MATH. The mathematical reasoning capability of DeepSeekMath is attributed to two key factors: First, we harness the significant potential of publicly available web data through a meticulously engineered data selection pipeline. Second, we introduce Group Relative Policy Optimization (GRPO), a variant of Proximal Policy Optimization (PPO), that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO."
+  },
+  {
+    "arxiv_id": "2004.04906",
+    "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+    "cluster": "dense_retrieval",
+    "is_survey": false,
+    "method_name": "DPR",
+    "abstract": "Open-domain question answering relies on efficient passage retrieval to select candidate contexts, where traditional sparse vector space models, such as TF-IDF or BM25, are the de facto method. In this work, we show that retrieval can be practically implemented using dense representations alone, where embeddings are learned from a small number of questions and passages by a simple dual-encoder framework. When evaluated on a wide range of open-domain QA datasets, our dense retriever outperforms a strong Lucene-BM25 system largely by 9%-19% absolute in terms of top-20 passage retrieval accuracy, and helps our end-to-end QA system establish new state-of-the-art on multiple open-domain QA benchmarks."
+  },
+  {
+    "arxiv_id": "2007.00808",
+    "title": "Approximate Nearest Neighbor Negative Contrastive Learning for Dense Text Retrieval",
+    "cluster": "dense_retrieval",
+    "is_survey": false,
+    "method_name": "ANCE",
+    "abstract": "Conducting text retrieval in a dense learned representation space has many intriguing advantages over sparse retrieval. Yet the effectiveness of dense retrieval (DR) often requires combination with sparse retrieval. The authors identify that training mechanisms represent a key limitation, where negative examples don't accurately reflect irrelevant documents encountered during testing. They introduce ANCE, which leverages an Approximate Nearest Neighbor index updated during training to select more realistic negative instances. This approach aligns the data distribution between training and testing phases. ANCE boosts the BERT-Siamese DR model to outperform all competitive dense and sparse retrieval baselines. It nearly matches the accuracy of sparse-retrieval-and-BERT-reranking using dot-product in the ANCE-learned representation space and provides almost 100x speed-up."
+  },
+  {
+    "arxiv_id": "2508.09497",
+    "title": "From Ranking to Selection: A Simple but Efficient Dynamic Passage Selector for Retrieval Augmented Generation",
+    "cluster": "dense_retrieval",
+    "is_survey": false,
+    "method_name": "Dynamic Passage Selector (DPS)",
+    "abstract": "Retrieval-augmented generation (RAG) systems often face bottlenecks in reranking modules that score passages independently with fixed Top-K selection. This becomes problematic for complex multi-hop queries requiring evidence synthesis across documents, creating a dilemma where smaller K values miss crucial information while larger values introduce noise. The authors propose Dynamic Passage Selector (DPS), a reranking framework treating passage selection as supervised learning. Unlike traditional point-wise or list-wise approaches, DPS captures inter-passage dependencies to dynamically select relevant passages for generation. Operating as a plug-and-play component requiring no RAG pipeline modifications, DPS shows consistent improvements across five benchmarks. On the MuSiQue dataset, it achieves F1-score improvements of 30.06% and 15.4% over strong baselines like Qwen3-reranker and RankingGPT, respectively, demonstrating enhanced reasoning capabilities in complex RAG scenarios through adaptive evidence selection."
+  },
+  {
+    "arxiv_id": "2308.10792",
+    "title": "Instruction Tuning for Large Language Models: A Survey",
+    "cluster": "instruction_tuning",
+    "is_survey": true,
+    "method_name": "SFT survey",
+    "abstract": "This survey examines instruction tuning (also called supervised fine-tuning), a key method for improving large language models' capabilities and controllability. The process involves further training LLMs on (instruction, output) datasets in a supervised manner, bridging the gap between models' next-word prediction objectives and users' needs for instruction adherence. The review covers SFT methodology, dataset construction, model training, and applications across different modalities and domains. It analyzes factors affecting SFT outcomes, including output generation quality and dataset size, while also examining potential pitfalls and current strategy limitations."
+  },
+  {
+    "arxiv_id": "2310.13385",
+    "title": "Tuna: Instruction Tuning using Feedback from Large Language Models",
+    "cluster": "instruction_tuning",
+    "is_survey": false,
+    "method_name": "Tuna",
+    "abstract": "Instruction tuning of open-source large language models (LLMs) like LLaMA, using direct outputs from more powerful LLMs such as Instruct-GPT and GPT-4, has proven to be a cost-effective way to align model behaviors with human preferences. However, the instruction-tuned model has only seen one response per instruction, lacking the knowledge of potentially better responses. In this paper, we propose finetuning an instruction-tuned LLM using our novel probabilistic ranking and contextual ranking approaches to increase the likelihood of generating better responses. Probabilistic ranking enables the instruction-tuned model to inherit the relative rankings of high-quality and low-quality responses from the teacher LLM. On the other hand, learning with contextual ranking allows the model to refine its own response distribution using the contextual understanding ability of stronger LLMs. The resulting model, which we call Tuna, consistently improves the performance on Super Natural Instructions (119 test tasks), LMentry (25 test tasks), Vicuna QA, and can even obtain better results than several strong reinforcement learning baselines."
+  },
+  {
+    "arxiv_id": "2503.23714",
+    "title": "Building Instruction-Tuning Datasets from Human-Written Instructions with Open-Weight Large Language Models",
+    "cluster": "instruction_tuning",
+    "is_survey": false,
+    "method_name": "human-instruction-sourced tuning dataset",
+    "abstract": "Instruction tuning is crucial for enabling Large Language Models (LLMs) to solve real-world tasks. Prior work has shown the effectiveness of instruction-tuning data synthesized solely from LLMs, raising a fundamental question: Do we still need human-originated signals for instruction tuning? This work answers the question affirmatively: we build state-of-the-art instruction-tuning datasets sourced from human-written instructions, by simply pairing them with LLM-generated responses. LLMs fine-tuned on our datasets consistently outperform those fine-tuned on existing ones. Our data construction approach can be easily adapted to other languages; we build datasets for Japanese and confirm that LLMs tuned with our data reach state-of-the-art performance. Analyses suggest that instruction-tuning in a new language allows LLMs to follow instructions, while the tuned models exhibit a notable lack of culture-specific knowledge in that language."
+  },
+  {
+    "arxiv_id": "2505.18642",
+    "title": "Skip-Thinking: Chunk-wise Chain-of-Thought Distillation Enable Smaller Language Models to Reason Better and Faster",
+    "cluster": "cot_distillation",
+    "is_survey": false,
+    "method_name": "Skip-Thinking (STT)",
+    "abstract": "Chain-of-thought (CoT) distillation allows a large language model (LLM) to guide a small language model (SLM) in reasoning tasks. Existing methods train the SLM to learn the long rationale in one iteration, resulting in two issues: 1) Long rationales lead to a large token-level batch size during training, making gradients of core reasoning tokens over-smoothed as they contribute a tiny fraction of the rationale, so the SLM converges to sharp minima where it fails to grasp the reasoning logic. 2) The response is slow, as the SLM must generate a long rationale before reaching the answer. Therefore, we propose chunk-wise training (CWT), which uses a heuristic search to divide the rationale into internal semantically coherent chunks and focuses SLM on learning from only one chunk per iteration. Based on CWT, skip-thinking training (STT) is proposed. STT makes the SLM automatically skip non-reasoning medium chunks to reach the answer, improving reasoning speed while maintaining accuracy."
+  },
+  {
+    "arxiv_id": "2502.18001",
+    "title": "Unveiling the Key Factors for Distilling Chain-of-Thought Reasoning",
+    "cluster": "cot_distillation",
+    "is_survey": false,
+    "method_name": "CoT distillation factor study",
+    "abstract": "Large Language Models (LLMs) excel in reasoning tasks through Chain-of-Thought (CoT) prompting. However, CoT prompting greatly increases computational demands, which has prompted growing interest in distilling CoT capabilities into Small Language Models (SLMs). This systematic study investigates granularity, format, and teacher model selection for CoT distillation across four teacher models and seven student models. The research identifies three key findings: smaller models show non-monotonic responses to reasoning granularity, with stronger models benefiting from detailed reasoning while weaker ones perform better with simpler supervision; format choices substantially affect LLMs but minimally impact SLMs due to reliance on fine-tuning rather than pretraining; and stronger teacher models do not always produce better student models, as diversity and complexity in CoT supervision can outweigh accuracy alone."
+  },
+  {
+    "arxiv_id": "2306.14050",
+    "title": "Symbolic Chain-of-Thought Distillation: Small Models Can Also Think Step-by-Step",
+    "cluster": "cot_distillation",
+    "is_survey": false,
+    "method_name": "SCoTD",
+    "abstract": "The paper describes a method called SCoTD that enables smaller language models (125M-1.3B parameters) to benefit from chain-of-thought prompting by training on rationalizations sampled from a significantly larger teacher model. Key findings include performance enhancements in both supervised and few-shot settings, the importance of sampling multiple reasoning chains per instance, and that student-generated chain-of-thoughts are judged by humans as comparable to the teacher, despite orders of magnitude fewer parameters."
+  }
+]
