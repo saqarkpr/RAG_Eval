@@ -1,4 +1,0 @@
-condition,accuracy,accuracy_ci_lo,accuracy_ci_hi,ece,brier,mean_confidence,mean_support_ratio,n,model
-no_context,0.39,0.32,0.465,0.3643694899976253,0.916823047358179,0.7543694899976253,,200,Qwen/Qwen2.5-1.5B-Instruct
-gold_context,0.465,0.39,0.54,0.3767030717432499,0.8456717755829146,0.8417030717432499,1.0,200,Qwen/Qwen2.5-1.5B-Instruct
-bm25_context,0.44,0.365,0.51,0.40031734392046936,0.8772781319528379,0.8403173439204693,1.0,200,Qwen/Qwen2.5-1.5B-Instruct
