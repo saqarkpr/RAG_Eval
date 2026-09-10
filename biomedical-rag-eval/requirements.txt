@@ -1,0 +1,9 @@
+# Core pipeline: retrieval, classical generator, metrics, plotting.
+# Runs fully offline, no GPU. Lower bounds are what this repo is tested
+# against; exact versions used for the committed results are in
+# requirements-lock.txt for full reproducibility.
+numpy>=1.26
+pandas>=2.0
+scikit-learn>=1.3
+rank-bm25>=0.2.2
+matplotlib>=3.7

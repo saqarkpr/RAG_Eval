@@ -1,0 +1,4 @@
+# Only needed to run tests/ locally or in CI -- not required to reproduce
+# any result in results/.
+-r requirements.txt
+pytest>=7.0

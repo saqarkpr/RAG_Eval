@@ -1,0 +1,12 @@
+# Exact versions used to produce the committed classical-pipeline results
+# in results/tables/{retrieval,generation}_results.csv and the reliability
+# figures under results/figures/ (excluding the *_llm files, which come
+# from the separate Colab environment -- see requirements-llm.txt). Not
+# required for reproducing the pipeline (requirements.txt's lower bounds
+# are enough) -- this file is here so an exact re-run is possible if a
+# newer version of one of these libraries ever changes behavior.
+numpy==2.4.4
+pandas==3.0.2
+scikit-learn==1.8.0
+rank-bm25==0.2.2
+matplotlib==3.10.9

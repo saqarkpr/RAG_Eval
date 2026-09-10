@@ -1,0 +1,7 @@
+# Only needed for src.generator.HFLocalLLMGenerator / scripts/run_generation_eval_llm.py.
+# Not importable or runnable in this repo's offline CI/sandbox (no GPU, no
+# Hugging Face Hub access) -- install this on Colab or a machine with a
+# GPU and network access instead. See README "Reproducing".
+torch>=2.2
+transformers>=4.42
+accelerate>=0.30
