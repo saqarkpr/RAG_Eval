@@ -5,7 +5,6 @@ would silently affect every number in the README. Exercised here with the
 classical generator on a tiny synthetic dataset -- fast, no GPU, no
 downloaded weights.
 """
-import numpy as np
 import pytest
 
 from src.eval_generation import CLASSES, CONDITIONS, evaluate_generator
@@ -30,9 +29,12 @@ CORPUS = [
     },
 ]
 TEST = [
-    {"qid": "q1", "doc_id": "d1", "question": "Does metformin lower glucose?", "final_decision": "yes"},
-    {"qid": "q2", "doc_id": "d2", "question": "Is ibuprofen an antibiotic?", "final_decision": "no"},
-    {"qid": "q3", "doc_id": "d3", "question": "Does exercise help the heart?", "final_decision": "yes"},
+    {"qid": "q1", "doc_id": "d1", "question": "Does metformin lower glucose?",
+     "final_decision": "yes"},
+    {"qid": "q2", "doc_id": "d2", "question": "Is ibuprofen an antibiotic?",
+     "final_decision": "no"},
+    {"qid": "q3", "doc_id": "d3", "question": "Does exercise help the heart?",
+     "final_decision": "yes"},
 ]
 
 
@@ -58,6 +60,10 @@ def test_evaluate_generator_returns_expected_shapes(tmp_path):
     for col in ["accuracy", "accuracy_ci_lo", "accuracy_ci_hi", "ece", "brier", "mean_confidence"]:
         assert col in summary_df.columns
         assert summary_df[col].notna().all()
+    # per-query probabilities are written in the fixed CLASSES order
+    assert list(per_query_df.columns[per_query_df.columns.str.startswith("p_")]) == [
+        f"p_{c}" for c in CLASSES
+    ]
 
 
 def test_evaluate_generator_no_context_condition_has_no_evidence(tmp_path):

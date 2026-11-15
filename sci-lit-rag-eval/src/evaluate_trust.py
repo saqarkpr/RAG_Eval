@@ -19,12 +19,16 @@ def expected_calibration_error(confidences, corrects, n_bins=10):
             mask = (confidences >= lo) & (confidences < hi)
         count = int(mask.sum())
         if count == 0:
-            bin_stats.append({"lo": lo, "hi": hi, "count": 0, "acc": None, "conf": None})
+            bin_stats.append(
+                {"lo": lo, "hi": hi, "count": 0, "acc": None, "conf": None}
+            )
             continue
         acc = corrects[mask].mean()
         conf = confidences[mask].mean()
         ece += (count / n) * abs(acc - conf)
-        bin_stats.append({"lo": lo, "hi": hi, "count": count, "acc": float(acc), "conf": float(conf)})
+        bin_stats.append(
+            {"lo": lo, "hi": hi, "count": count, "acc": float(acc), "conf": float(conf)}
+        )
     return float(ece), bin_stats
 
 
@@ -41,7 +45,9 @@ def hallucination_rate(records):
     gold_unanswerable = [r for r in records if r["gold_answer_type"] == "unanswerable"]
     if not gold_unanswerable:
         return None, 0, 0
-    n_hallucinated = sum(1 for r in gold_unanswerable if r["predicted_answer_type"] != "unanswerable")
+    n_hallucinated = sum(
+        1 for r in gold_unanswerable if r["predicted_answer_type"] != "unanswerable"
+    )
     rate = n_hallucinated / len(gold_unanswerable)
     return rate, n_hallucinated, len(gold_unanswerable)
 
@@ -52,7 +58,9 @@ def false_abstention_rate(records):
     gold_answerable = [r for r in records if r["gold_answer_type"] != "unanswerable"]
     if not gold_answerable:
         return None, 0, 0
-    n_false_abstain = sum(1 for r in gold_answerable if r["predicted_answer_type"] == "unanswerable")
+    n_false_abstain = sum(
+        1 for r in gold_answerable if r["predicted_answer_type"] == "unanswerable"
+    )
     rate = n_false_abstain / len(gold_answerable)
     return rate, n_false_abstain, len(gold_answerable)
 

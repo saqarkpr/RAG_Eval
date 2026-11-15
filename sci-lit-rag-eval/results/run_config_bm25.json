@@ -1,0 +1,7 @@
+{
+  "retriever": "bm25",
+  "seed": 42,
+  "top_k": 5,
+  "n_splits": 5,
+  "lsa_n_components": null
+}

@@ -83,5 +83,35 @@ def test_lsa_scores_are_bounded_cosine_similarities():
 def test_lsa_caps_n_components_below_corpus_size():
     # requesting more components than documents-1 must not raise
     retriever = LsaRetriever(DOC_IDS, TEXTS, n_components=999)
+    assert retriever.n_components <= len(TEXTS) - 1
     result = retriever.retrieve("diabetes", k=1)
     assert len(result.doc_ids) == 1
+
+
+def test_lsa_caps_n_components_below_vocabulary_size():
+    # five documents but only two vocabulary words survive min_df=2
+    # ("alpha", "beta"; the numerals occur once each) -> SVD can have at
+    # most 1 component, and that must be handled rather than raise
+    ids = ["x1", "x2", "x3", "x4", "x5"]
+    texts = ["alpha one", "alpha two", "beta three", "beta four", "gamma five"]
+    retriever = LsaRetriever(ids, texts, n_components=50)
+    assert retriever.n_components == 1
+    assert len(retriever.retrieve("alpha", k=5).doc_ids) == 5
+
+
+def test_lsa_rejects_corpus_with_no_usable_vocabulary():
+    import pytest
+
+    # "alpha" is in every document (dropped by max_df), everything else is
+    # a singleton (dropped by min_df) -> no vocabulary left for LSA
+    with pytest.raises(ValueError, match="vocabulary"):
+        LsaRetriever(["a", "b", "c"], ["alpha one", "alpha two", "alpha three"])
+
+
+def test_retrievers_reject_mismatched_ids_and_texts():
+    import pytest
+
+    with pytest.raises(ValueError):
+        BM25Retriever(["a", "b"], ["only one text"])
+    with pytest.raises(ValueError):
+        LsaRetriever(["a"], ["t1", "t2"])

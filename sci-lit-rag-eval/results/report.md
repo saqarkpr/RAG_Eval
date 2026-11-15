@@ -9,10 +9,10 @@
 
 | Retriever | Build time (s) | Mean latency (ms) | P95 latency (ms) | Approx. memory (KB) |
 |---|---|---|---|---|
-| bm25 | 0.0029 | 0.130 | 0.188 | 384.5 |
-| tfidf_lsa | 0.0275 | 0.667 | 0.726 | 197.6 |
+| bm25 | 0.0024 | 0.122 | 0.198 | 361.0 |
+| tfidf_lsa | 0.0179 | 0.762 | 1.087 | 197.6 |
 
-## Robustness probe (negation flip test, BM25 features, full-data model)
+## Robustness probe (negation flip test, bm25 features, full-data model)
 
 - Questions probed: 34
 - Flipped prediction on negated paraphrase: 13

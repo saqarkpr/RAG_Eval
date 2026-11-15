@@ -1,9 +1,10 @@
 [
   {
     "retriever": "bm25",
+    "n_items": 77,
     "accuracy": 0.5714285714285714,
-    "ece": 0.1732844100802419,
-    "brier": 0.26829866668663177,
+    "ece": 0.17328440700098025,
+    "brier": 0.2682986763892789,
     "hallucination_rate": 0.125,
     "hallucination_count": "2/16",
     "false_abstention_rate": 0.18032786885245902,
@@ -18,18 +19,19 @@
       "n_queries": 61
     },
     "efficiency": {
-      "build_time_s": 0.0029271289999996952,
-      "mean_latency_ms": 0.13018412555026979,
-      "p95_latency_ms": 0.18788800002766948,
-      "approx_memory_kb": 384.5068359375,
+      "build_time_s": 0.0023751400000264766,
+      "mean_latency_ms": 0.12177682251318535,
+      "p95_latency_ms": 0.19829100006063527,
+      "approx_memory_kb": 360.9521484375,
       "n_queries_timed": 231
     }
   },
   {
     "retriever": "tfidf_lsa",
+    "n_items": 77,
     "accuracy": 0.4935064935064935,
-    "ece": 0.1623514047772332,
-    "brier": 0.2617143527430001,
+    "ece": 0.1623514045783428,
+    "brier": 0.2617143526740504,
     "hallucination_rate": 0.3125,
     "hallucination_count": "5/16",
     "false_abstention_rate": 0.29508196721311475,
@@ -44,9 +46,9 @@
       "n_queries": 61
     },
     "efficiency": {
-      "build_time_s": 0.027542296999854443,
-      "mean_latency_ms": 0.6665215064931073,
-      "p95_latency_ms": 0.7256880001023092,
+      "build_time_s": 0.017920479000054,
+      "mean_latency_ms": 0.7622061731585136,
+      "p95_latency_ms": 1.086836499951005,
       "approx_memory_kb": 197.625,
       "n_queries_timed": 231
     }

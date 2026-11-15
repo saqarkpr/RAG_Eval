@@ -1,28 +1,43 @@
 #!/usr/bin/env python3
 """Compute trustworthy-evaluation metrics (calibration, hallucination rate,
-evidence grounding, retrieval Recall@k/MRR, efficiency) from the
-out-of-fold predictions written by train.py, for both retrievers, and
-produce a comparison report + reliability diagrams under results/."""
+false-abstention rate, evidence grounding, retrieval Recall@k/MRR,
+efficiency) from the out-of-fold predictions written by train.py, for
+every retriever that has been trained, run the negation-robustness probe,
+and produce a comparison report + reliability diagrams under results/.
+
+Usage:
+    python evaluate.py                       # after train.py for both retrievers
+    python evaluate.py --retrievers bm25     # only what has been trained
+"""
+import argparse
 import json
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.linear_model import LogisticRegression
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from sklearn.linear_model import LogisticRegression  # noqa: E402
 
-from src.data_utils import load_corpus, load_qa, corpus_index_by_id
-from src.retrieval import build_retriever
-from src.generator import extract_features, fuzzy_match, FEATURE_NAMES, NEGATION_CUES
-
-from src.evaluate_trust import (
-    expected_calibration_error, brier_score, hallucination_rate,
-    false_abstention_rate, evidence_grounding_rate,
+from src.config import DEFAULT_CONFIG_PATH, load_config, resolve_data_paths  # noqa: E402
+from src.data_utils import corpus_index_by_id, load_corpus, load_qa  # noqa: E402
+from src.evaluate_trust import (  # noqa: E402
+    brier_score,
+    evidence_grounding_rate,
+    expected_calibration_error,
+    false_abstention_rate,
+    hallucination_rate,
 )
+from src.generator import extract_features, fuzzy_match  # noqa: E402
+from src.retrieval import RETRIEVERS, build_retriever  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results"
+
+# Leading auxiliary verbs stripped before a yes/no question is negated in
+# the robustness probe ("Does X do Y?" -> "Is it NOT the case that X does Y?").
+AUX_PREFIXES = ("Does ", "Is ", "Did ", "Has ", "Do ", "Are ", "Was ", "Were ", "Can ", "Could ")
 
 
 def is_correct(rec):
@@ -60,22 +75,23 @@ def reliability_plot(confidences, corrects, out_path, title, n_bins=10):
     return ece, bins
 
 
-def summarize(retriever_name):
-    with open(RESULTS / f"records_{retriever_name}.json") as f:
+def summarize(retriever_name, results_dir=RESULTS, n_bins=10):
+    with open(results_dir / f"records_{retriever_name}.json") as f:
         records = json.load(f)
-    with open(RESULTS / f"retrieval_metrics_{retriever_name}.json") as f:
+    with open(results_dir / f"retrieval_metrics_{retriever_name}.json") as f:
         retrieval = json.load(f)["metrics"]
-    with open(RESULTS / f"efficiency_{retriever_name}.json") as f:
+    with open(results_dir / f"efficiency_{retriever_name}.json") as f:
         efficiency = json.load(f)
 
     corrects = np.array([1.0 if is_correct(r) else 0.0 for r in records])
     confidences = np.array([r["confidence"] for r in records])
     accuracy = float(corrects.mean())
 
-    ece, bins = reliability_plot(
+    ece, _ = reliability_plot(
         confidences, corrects,
-        RESULTS / f"reliability_{retriever_name}.png",
+        results_dir / f"reliability_{retriever_name}.png",
         f"Reliability diagram ({retriever_name})",
+        n_bins=n_bins,
     )
     brier = brier_score(confidences, corrects)
 
@@ -85,6 +101,7 @@ def summarize(retriever_name):
 
     return {
         "retriever": retriever_name,
+        "n_items": len(records),
         "accuracy": accuracy,
         "ece": ece,
         "brier": brier,
@@ -99,73 +116,86 @@ def summarize(retriever_name):
     }
 
 
-def robustness_probe(seed=42):
-    """Diagnostic (not a generalization estimate): train Stage-A/B/C on ALL
-    77 items, then check whether negating a yes/no question's polarity
-    (prepending 'Is it NOT the case that ...') flips the predicted yes/no
-    value. Uses the BM25 retriever. Reports a consistency rate."""
-    docs = load_corpus(ROOT / "data" / "corpus.json")
-    qa = load_qa(ROOT / "data" / "qa_benchmark.json")
+def negate_question(question: str) -> str:
+    """'Does X improve Y?' -> 'Is it NOT the case that X improve Y?'. The
+    leading auxiliary is dropped (not conjugated), which is deliberate: the
+    probe asks whether the classifier tracks polarity, so the paraphrase
+    should keep every content word identical."""
+    stripped = question.strip().rstrip("?").strip()
+    for aux in AUX_PREFIXES:
+        if stripped.startswith(aux):
+            stripped = stripped[len(aux):]
+            break
+    if not stripped:
+        return question
+    return f"Is it NOT the case that {stripped[0].lower()}{stripped[1:]}?"
+
+
+def robustness_probe(cfg, retriever_name="bm25"):
+    """Diagnostic (not a generalization estimate): fit the Stage-C yes/no
+    classifier on ALL yes/no items (no held-out split), then check whether
+    negating a question's polarity (see negate_question) flips the
+    predicted yes/no value. Reports the flip rate; a logically sound
+    classifier should flip on nearly every item."""
+    corpus_path, qa_path = resolve_data_paths(cfg, ROOT)
+    docs = load_corpus(corpus_path)
+    qa = load_qa(qa_path)
     docs_by_id = corpus_index_by_id(docs)
-    retriever = build_retriever("bm25", docs)
+    kwargs = {}
+    if retriever_name == "tfidf_lsa":
+        kwargs = {"n_components": cfg["tfidf_lsa"]["n_components"], "random_state": cfg["seed"]}
+    retriever = build_retriever(retriever_name, docs, **kwargs)
+    k = cfg["top_k"]
 
     yesno_items = [q for q in qa if q["answer_type"] == "yes_no"]
+    if not yesno_items:
+        return {"n_probed": 0, "n_flipped_on_negation": 0, "negation_flip_rate": None,
+                "retriever": retriever_name, "note": "no yes/no items to probe"}
 
     def featurize(question):
-        retrieved = retriever.retrieve(question, k=5)
-        feats, top1_id = extract_features(question, retrieved, docs_by_id)
+        retrieved = retriever.retrieve(question, k=k)
+        feats, _ = extract_features(question, retrieved, docs_by_id)
         return feats
 
-    X, y_is_yes = [], []
-    for q in yesno_items:
-        X.append(featurize(q["question"]))
-        y_is_yes.append(1 if q["gold_answer"] == "Yes" else 0)
-    X = np.array(X)
-    y_is_yes = np.array(y_is_yes)
+    X = np.array([featurize(q["question"]) for q in yesno_items])
+    y_is_yes = np.array([1 if q["gold_answer"] == "Yes" else 0 for q in yesno_items])
 
     clf = LogisticRegression(max_iter=1000, class_weight="balanced")
     clf.fit(X, y_is_yes)
     classes = list(clf.classes_)
+    if 1 not in classes:  # every gold answer is "No": nothing to flip
+        pred_yes_orig = np.zeros(len(yesno_items), dtype=bool)
+        pred_yes_neg = pred_yes_orig
+    else:
+        pred_yes_orig = clf.predict_proba(X)[:, classes.index(1)] >= 0.5
+        X_neg = np.array([featurize(negate_question(q["question"])) for q in yesno_items])
+        pred_yes_neg = clf.predict_proba(X_neg)[:, classes.index(1)] >= 0.5
 
-    flips = 0
-    for q in yesno_items:
-        orig_feats = np.array([featurize(q["question"])])
-        p_yes_orig = clf.predict_proba(orig_feats)[0][classes.index(1)]
-        pred_orig = p_yes_orig >= 0.5
-
-        stripped = q["question"].rstrip("?").strip()
-        # drop a leading aux verb (Does/Is/Did/Has/Do) if present, then negate
-        for aux in ["Does ", "Is ", "Did ", "Has ", "Do "]:
-            if stripped.startswith(aux):
-                stripped = stripped[len(aux):]
-                break
-        negated_q = f"Is it NOT the case that {stripped[0].lower()}{stripped[1:]}?"
-
-        neg_feats = np.array([featurize(negated_q)])
-        p_yes_neg = clf.predict_proba(neg_feats)[0][classes.index(1)]
-        pred_neg = p_yes_neg >= 0.5
-
-        if pred_orig != pred_neg:
-            flips += 1
-
-    flip_rate = flips / len(yesno_items)
+    flips = int(np.sum(pred_yes_orig != pred_yes_neg))
     return {
+        "retriever": retriever_name,
         "n_probed": len(yesno_items),
         "n_flipped_on_negation": flips,
-        "negation_flip_rate": flip_rate,
-        "note": "Diagnostic probe trained on all 77 items (not held out); "
-                "measures whether the yes/no classifier's decision flips "
-                "when a question's logical polarity is negated. A LOGICALLY "
-                "SOUND classifier should flip on (nearly) every item, since "
-                "negating the question's polarity negates the correct "
-                "answer; a low flip rate means the classifier is tracking "
-                "surface lexical cues rather than semantic polarity.",
+        "negation_flip_rate": flips / len(yesno_items),
+        "note": f"Diagnostic probe: the Stage-C yes/no classifier is fit on all "
+                f"{len(yesno_items)} yes/no items (not held out) using "
+                f"{retriever_name} retrieval features, then each question is "
+                "negated ('Is it NOT the case that ...?') and re-scored. It "
+                "measures whether the classifier's decision flips when a "
+                "question's logical polarity is negated. A LOGICALLY SOUND "
+                "classifier should flip on (nearly) every item, since negating "
+                "the question negates the correct answer; a low flip rate means "
+                "the classifier is tracking surface lexical cues rather than "
+                "semantic polarity.",
     }
 
 
-def write_report(summaries, robustness):
+def write_report(summaries, robustness, results_dir=RESULTS):
     lines = ["# Results summary\n"]
-    lines.append("| Retriever | Recall@1 | Recall@3 | Recall@5 | MRR | QA acc. | ECE | Brier | Hallucination rate | False-abstention rate | Evidence-grounding rate |")
+    lines.append(
+        "| Retriever | Recall@1 | Recall@3 | Recall@5 | MRR | QA acc. | ECE | Brier | "
+        "Hallucination rate | False-abstention rate | Evidence-grounding rate |"
+    )
     lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for s in summaries:
         r = s["retrieval"]
@@ -178,7 +208,10 @@ def write_report(summaries, robustness):
             f"{s['evidence_grounding_rate']:.3f} ({s['evidence_grounding_count']}) |"
         )
     lines.append("\n## Efficiency (CPU-only)\n")
-    lines.append("| Retriever | Build time (s) | Mean latency (ms) | P95 latency (ms) | Approx. memory (KB) |")
+    lines.append(
+        "| Retriever | Build time (s) | Mean latency (ms) | P95 latency (ms) "
+        "| Approx. memory (KB) |"
+    )
     lines.append("|---|---|---|---|---|")
     for s in summaries:
         e = s["efficiency"]
@@ -186,26 +219,56 @@ def write_report(summaries, robustness):
             f"| {s['retriever']} | {e['build_time_s']:.4f} | {e['mean_latency_ms']:.3f} | "
             f"{e['p95_latency_ms']:.3f} | {e['approx_memory_kb']:.1f} |"
         )
-    lines.append("\n## Robustness probe (negation flip test, BM25 features, full-data model)\n")
+    lines.append(
+        f"\n## Robustness probe (negation flip test, {robustness['retriever']} features, "
+        "full-data model)\n"
+    )
     lines.append(f"- Questions probed: {robustness['n_probed']}")
-    lines.append(f"- Flipped prediction on negated paraphrase: {robustness['n_flipped_on_negation']}")
-    lines.append(f"- Negation flip rate: {robustness['negation_flip_rate']:.3f} "
-                 f"(higher = more logically consistent; 1.0 = always flips as it should)")
+    lines.append(
+        f"- Flipped prediction on negated paraphrase: {robustness['n_flipped_on_negation']}"
+    )
+    rate = robustness["negation_flip_rate"]
+    rate_str = f"{rate:.3f}" if rate is not None else "n/a"
+    lines.append(f"- Negation flip rate: {rate_str} "
+                 "(higher = more logically consistent; 1.0 = always flips as it should)")
     report = "\n".join(lines) + "\n"
-    with open(RESULTS / "report.md", "w") as f:
+    with open(results_dir / "report.md", "w") as f:
         f.write(report)
     return report
 
 
-def main():
-    summaries = [summarize("bm25"), summarize("tfidf_lsa")]
-    with open(RESULTS / "summary.json", "w") as f:
+def parse_args(argv=None):
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument("--config", type=Path, default=DEFAULT_CONFIG_PATH)
+    ap.add_argument("--results-dir", type=Path, default=RESULTS)
+    ap.add_argument("--retrievers", nargs="+", choices=sorted(RETRIEVERS), default=None,
+                    help="retrievers to summarize (default: every one with records_*.json)")
+    ap.add_argument("--probe-retriever", choices=sorted(RETRIEVERS), default="bm25",
+                    help="retriever whose features the negation probe uses")
+    return ap.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    cfg = load_config(args.config)
+    results_dir = args.results_dir
+
+    names = args.retrievers or [
+        n for n in RETRIEVERS if (results_dir / f"records_{n}.json").exists()
+    ]
+    if not names:
+        raise FileNotFoundError(
+            f"no records_*.json in {results_dir}; run train.py (or scripts/train.sh) first"
+        )
+    summaries = [summarize(n, results_dir, n_bins=cfg["ece_bins"]) for n in names]
+    with open(results_dir / "summary.json", "w") as f:
         json.dump(summaries, f, indent=2)
-    robustness = robustness_probe()
-    with open(RESULTS / "robustness.json", "w") as f:
+    robustness = robustness_probe(cfg, retriever_name=args.probe_retriever)
+    with open(results_dir / "robustness.json", "w") as f:
         json.dump(robustness, f, indent=2)
-    report = write_report(summaries, robustness)
-    print(report)
+    print(write_report(summaries, robustness, results_dir))
 
 
 if __name__ == "__main__":

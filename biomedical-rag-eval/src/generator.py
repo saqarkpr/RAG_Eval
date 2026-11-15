@@ -2,21 +2,23 @@
 Answer generation backends.
 
 The default `ExtractiveClassifierGenerator` needs no downloaded model
-weights, so it runs anywhere (including this offline sandbox) and still
+weights, so it runs anywhere (including an offline sandbox) and still
 produces a real predictive distribution to evaluate calibration honestly:
 a logistic regression over TF-IDF question+evidence features, trained on
 the train split, predicts P(yes/no/maybe). The extractive "answer" text
 is the single evidence sentence with highest lexical overlap with the
-question, plus an explicit citation to its source document and section.
+question, plus an explicit citation to its source document.
 
 `HFLocalLLMGenerator` is the real-LLM upgrade: a genuine instruction-tuned
 model (e.g. Qwen2.5-1.5B-Instruct) reads the same retrieved evidence and
-produces an abstractive answer through the same
-(answer, confidence, evidence, doc_id) `GenerationResult` interface, so
+answers through the same `GenerationResult` interface, so
 `scripts/run_generation_eval_llm.py` reuses every metric in `metrics.py`
 unchanged. It requires `transformers`/`torch` and network access to
-download weights, which this repo's offline sandbox does not have --
-run it on Colab (see README).
+download weights -- run it on Colab or any GPU machine (see README).
+
+Everything that does not need torch (prompt construction, evidence
+truncation, candidate-token enumeration) lives in module-level functions
+so it can be unit-tested without installing torch.
 """
 import re
 from dataclasses import dataclass
@@ -26,6 +28,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
 from .retrieval import tokenize
+
+DECISION_WORDS = ["yes", "no", "maybe"]
 
 
 @dataclass
@@ -54,34 +58,42 @@ def best_matching_sentence(query_words: set, sentences: list[str]) -> str:
     return best
 
 
+def format_answer(decision: str, cited_sentence: str, doc_id: str) -> str:
+    return f'{decision.capitalize()}. Evidence: "{cited_sentence}" (source: {doc_id})'
+
+
 class ExtractiveClassifierGenerator:
     name = "extractive_tfidf_logreg"
 
-    def __init__(self):
-        self.vectorizer = TfidfVectorizer(tokenizer=tokenize, lowercase=False, min_df=2)
-        self.clf = LogisticRegression(max_iter=2000, C=2.0)
+    def __init__(self, C: float = 2.0, min_df: int = 2):
+        self.vectorizer = TfidfVectorizer(
+            tokenizer=tokenize, lowercase=False, token_pattern=None, min_df=min_df
+        )
+        self.clf = LogisticRegression(max_iter=2000, C=C)
         self.classes_ = None
 
     def fit(self, questions: list[str], evidences: list[str], labels: list[str]):
+        if not (len(questions) == len(evidences) == len(labels)):
+            raise ValueError("questions, evidences and labels must have the same length")
         X_text = [f"{q} [SEP] {e}" for q, e in zip(questions, evidences)]
         X = self.vectorizer.fit_transform(X_text)
         self.clf.fit(X, labels)
         self.classes_ = list(self.clf.classes_)
+        return self
 
     def generate(
         self, question: str, doc_id: str, evidence_text: str, evidence_sentences: list[str]
     ) -> GenerationResult:
+        if self.classes_ is None:
+            raise RuntimeError("ExtractiveClassifierGenerator.generate() called before fit()")
         X = self.vectorizer.transform([f"{question} [SEP] {evidence_text}"])
         probs = self.clf.predict_proba(X)[0]
         pred_idx = int(np.argmax(probs))
         decision = self.classes_[pred_idx]
         confidence = float(probs[pred_idx])
         best_sentence = best_matching_sentence(set(tokenize(question)), evidence_sentences)
-        answer_text = (
-            f"{decision.capitalize()}. Evidence: \"{best_sentence}\" (source: {doc_id})"
-        )
         return GenerationResult(
-            answer_text=answer_text,
+            answer_text=format_answer(decision, best_sentence, doc_id),
             decision=decision,
             confidence=confidence,
             class_probs=dict(zip(self.classes_, probs.tolist())),
@@ -90,11 +102,118 @@ class ExtractiveClassifierGenerator:
         )
 
 
+# ---------------------------------------------------------------------------
+# LLM generator: torch-free helpers (unit-tested) ---------------------------
+# ---------------------------------------------------------------------------
+
+_SENTENCE_BOUNDARY_RE = re.compile(r"(?<=[.!?])\s+")
+
+SYSTEM_WITH_EVIDENCE = (
+    "You are a careful biomedical-literature assistant. Base your answer "
+    "only on the evidence given. If the evidence is insufficient or mixed, "
+    "answer 'maybe'."
+)
+# No evidence at all is a different question ("what does the model's own
+# prior say?") from "the evidence you were given is ambiguous". Reusing the
+# evidence-present system prompt here would tell the model evidence is
+# missing and then also instruct it to answer 'maybe' whenever evidence is
+# insufficient, collapsing every no-evidence answer to a forced 'maybe'
+# regardless of what the model actually believes (this happened in the
+# first LLM run; see README). Keep this branch free of any
+# insufficient-evidence cue.
+SYSTEM_NO_EVIDENCE = (
+    "You are a careful biomedical-literature assistant. Answer using your "
+    "own biomedical knowledge."
+)
+ANSWER_INSTRUCTION = "Answer with exactly one word: yes, no, or maybe."
+
+
+def truncate_evidence(evidence_text: str, max_chars: int) -> str:
+    """Truncate to `max_chars` WITHOUT cutting a sentence in half:
+    accumulate whole sentences until the next one would exceed the budget.
+    Falls back to a hard character cut only if the first sentence alone
+    exceeds the whole budget.
+    """
+    if len(evidence_text) <= max_chars:
+        return evidence_text
+    kept, length = [], 0
+    for s in _SENTENCE_BOUNDARY_RE.split(evidence_text):
+        if length + len(s) + 1 > max_chars and kept:
+            break
+        kept.append(s)
+        length += len(s) + 1
+    truncated = " ".join(kept)
+    return truncated if len(truncated) <= max_chars else evidence_text[:max_chars]
+
+
+def build_messages(question: str, evidence_text: str, max_evidence_chars: int = 2000) -> list:
+    """Chat messages for the decision prompt. Two different system prompts
+    are used depending on whether any evidence is present (see
+    SYSTEM_NO_EVIDENCE above for why)."""
+    if evidence_text:
+        evidence = truncate_evidence(evidence_text, max_evidence_chars)
+        system = SYSTEM_WITH_EVIDENCE
+        user = f"Evidence:\n{evidence}\n\nQuestion: {question}\n{ANSWER_INSTRUCTION}"
+    else:
+        system = SYSTEM_NO_EVIDENCE
+        user = f"Question: {question}\n{ANSWER_INSTRUCTION}"
+    return [
+        {"role": "system", "content": system},
+        {"role": "user", "content": user},
+    ]
+
+
+def citation_messages(decision_messages: list, decision: str, evidence_sentences: list) -> list:
+    """Follow-up chat turn asking the model to pick a sentence NUMBER (never
+    free text) from the real evidence sentences. The model's own decision
+    is replayed as its previous assistant turn so the follow-up is a
+    well-formed conversation rather than text pasted after the generation
+    prompt."""
+    numbered = "\n".join(f"{i + 1}. {s}" for i, s in enumerate(evidence_sentences))
+    return decision_messages + [
+        {"role": "assistant", "content": decision},
+        {
+            "role": "user",
+            "content": (
+                f"Evidence sentences:\n{numbered}\n\n"
+                "Which numbered sentence above most directly supports your "
+                "answer? Reply with only the number."
+            ),
+        },
+    ]
+
+
+def parse_sentence_choice(reply: str, n_sentences: int) -> int | None:
+    """Return the 0-based index chosen in `reply`, or None if the reply does
+    not contain a valid in-range number."""
+    match = re.search(r"\d+", reply)
+    if not match:
+        return None
+    idx = int(match.group()) - 1
+    return idx if 0 <= idx < n_sentences else None
+
+
+def candidate_token_sequences(tokenizer, word: str) -> list[list[int]]:
+    """Distinct token-id sequences for the surface forms of `word` the model
+    may emit as its answer: lowercase and capitalized, with and without a
+    leading space. Which form is "natural" depends on the chat template
+    (ChatML ends the generation prompt with a newline, so the first answer
+    token has no leading space; other templates leave a space) and on
+    whether the model prefers "Yes" to "yes", so all forms are scored and
+    their probabilities summed per word."""
+    seqs: list[list[int]] = []
+    for form in (word, word.capitalize()):
+        for text in (form, " " + form):
+            ids = list(tokenizer(text, add_special_tokens=False)["input_ids"])
+            if ids and ids not in seqs:
+                seqs.append(ids)
+    return seqs
+
+
 class HFLocalLLMGenerator:
-    """Real instruction-tuned LLM generator. Not runnable in the offline
-    sandbox this repo was drafted in (no GPU, no network access to
-    Hugging Face Hub to download weights) -- run it on Colab instead:
-    `pip install torch transformers accelerate`, then
+    """Real instruction-tuned LLM generator. Needs `pip install -r
+    requirements-llm.txt` and Hugging Face Hub access to download weights;
+    run it on Colab or any GPU machine with
     `python scripts/run_generation_eval_llm.py`.
 
     Two design choices exist specifically to keep this generator
@@ -105,28 +224,24 @@ class HFLocalLLMGenerator:
        (asking an LLM to introspect on its own calibration is known to be
        unreliable). Instead we score the model's actual next-token
        log-probability for each of the three candidate decision words
-       ("yes"/"no"/"maybe") as the immediate continuation of the prompt,
-       and softmax across just those three. This is best described as a
-       *renormalized candidate-token probability*, not a calibrated
+       ("yes"/"no"/"maybe", summed over their lowercase/capitalized and
+       space/no-space surface forms) as the immediate continuation of the
+       prompt, and softmax across just those three. This is best described
+       as a *renormalized candidate-token probability*, not a calibrated
        probability in the general sense -- it says how the model weighs
-       these three specific continuations against each other, not that
-       the resulting number is a well-calibrated estimate of correctness
-       (that calibration is exactly what ECE/Brier in metrics.py then
-       measure empirically).
-    2. The citation is NEVER free-form LLM generation. An earlier version
-       of this class asked the model to generate its supporting quote
-       directly, which risks a fluent quote that doesn't actually appear
-       in the evidence -- exactly the failure mode a "trustworthy
-       evaluation" project shouldn't wave through. Instead the model
-       picks a sentence NUMBER from a numbered list of the real evidence
-       sentences, which is mapped back to that exact string; if parsing
-       the number fails, a lexical-overlap fallback (never the model's
-       own free text) is used instead. The cited sentence is therefore
-       always verbatim from the evidence or empty, by construction.
+       these three continuations against each other, not that the number
+       is a well-calibrated estimate of correctness (that calibration is
+       exactly what ECE/Brier in metrics.py then measure empirically).
+    2. The citation is NEVER free-form LLM generation. The model picks a
+       sentence NUMBER from a numbered list of the real evidence sentences,
+       which is mapped back to that exact string; if parsing the number
+       fails, a lexical-overlap fallback (never the model's own free text)
+       is used instead. The cited sentence is therefore always verbatim
+       from the evidence or empty, by construction.
     """
 
     name = "hf_local_llm"
-    DECISION_WORDS = ["yes", "no", "maybe"]
+    DECISION_WORDS = DECISION_WORDS
 
     def __init__(
         self,
@@ -139,167 +254,109 @@ class HFLocalLLMGenerator:
             from transformers import AutoModelForCausalLM, AutoTokenizer
         except ImportError as e:
             raise ImportError(
-                "HFLocalLLMGenerator requires `pip install torch transformers "
-                "accelerate` and network access to Hugging Face Hub. Run this "
-                "on Colab; the offline sandbox this repo was drafted in has "
-                "neither."
+                "HFLocalLLMGenerator requires `pip install -r requirements-llm.txt` "
+                "and network access to Hugging Face Hub (run it on Colab or a GPU machine)."
             ) from e
         self._torch = torch
+        self.model_name = model_name
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.max_evidence_chars = max_evidence_chars
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         # bfloat16 needs Ampere-or-newer hardware (A100, RTX30xx+); a T4
         # (Turing, the free Colab GPU) has no bf16 tensor cores and either
-        # errors or silently runs it much slower via emulation. float16
-        # is what T4 actually supports well, so pick it dynamically rather
-        # than hardcoding bf16 and assuming an A100.
-        if self.device == "cuda":
+        # errors or silently runs it much slower via emulation. float16 is
+        # what T4 actually supports well, so pick it dynamically.
+        if self.device.startswith("cuda"):
             dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
         else:
             dtype = torch.float32
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_name, dtype=dtype  # `dtype=` (transformers renamed torch_dtype=)
-        ).to(self.device)
+        try:
+            model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
+        except TypeError:  # transformers < 4.56 only knows the old keyword
+            model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype)
+        self.model = model.to(self.device)
         self.model.eval()
-        # Precompute each decision word's token ids once; most tokenizers
-        # encode a leading-space word differently from a bare word, and the
-        # chat template always leaves a space before the answer, so we
-        # tokenize " yes" / " no" / " maybe" to match how it actually
-        # appears mid-generation.
-        self._decision_token_ids = {
-            w: self.tokenizer(" " + w, add_special_tokens=False)["input_ids"]
-            for w in self.DECISION_WORDS
+        self._decision_variants = {
+            w: candidate_token_sequences(self.tokenizer, w) for w in self.DECISION_WORDS
         }
 
-    def _truncate_evidence(self, evidence_text: str) -> str:
-        """Truncate to max_evidence_chars WITHOUT cutting a sentence in
-        half: accumulate whole sentences (split on '. ') until the next
-        one would exceed the budget. Falls back to a hard character cut
-        only if a single sentence alone exceeds the whole budget.
-        """
-        if len(evidence_text) <= self.max_evidence_chars:
-            return evidence_text
-        sentences = re.split(r"(?<=[.!?])\s+", evidence_text)
-        kept, length = [], 0
-        for s in sentences:
-            if length + len(s) + 1 > self.max_evidence_chars and kept:
-                break
-            kept.append(s)
-            length += len(s) + 1
-        truncated = " ".join(kept)
-        return truncated if truncated else evidence_text[: self.max_evidence_chars]
-
-    def _build_prompt(self, question: str, evidence_text: str) -> str:
-        has_evidence = bool(evidence_text)
-        if has_evidence:
-            evidence = self._truncate_evidence(evidence_text)
-            system = (
-                "You are a careful biomedical-literature assistant. Base "
-                "your answer only on the evidence given. If the evidence "
-                "is insufficient or mixed, answer 'maybe'."
-            )
-            user = (
-                f"Evidence:\n{evidence}\n\nQuestion: {question}\n"
-                "Answer with exactly one word: yes, no, or maybe."
-            )
-        else:
-            # No evidence at all is a different question ("what does the
-            # model's own prior say?") from "the evidence you were given
-            # is ambiguous" -- reusing the evidence-present system prompt
-            # here would tell the model evidence is missing/insufficient
-            # and then also instruct it to answer 'maybe' whenever
-            # evidence is insufficient, collapsing every no-evidence
-            # answer to a forced 'maybe' regardless of what the model
-            # actually believes. Keep this branch free of any
-            # insufficient-evidence cue.
-            system = (
-                "You are a careful biomedical-literature assistant. Answer "
-                "using your own biomedical knowledge."
-            )
-            user = (
-                f"Question: {question}\n"
-                "Answer with exactly one word: yes, no, or maybe."
-            )
-        messages = [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ]
+    # -- prompting ---------------------------------------------------------
+    def _render(self, messages: list) -> str:
         return self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
 
+    def _encode(self, prompt: str):
+        # The rendered chat template already contains any special tokens
+        # (BOS, role markers), so do not let the tokenizer add a second set.
+        return self.tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to(
+            self.device
+        )
+
+    # -- decision ----------------------------------------------------------
     def _decision_distribution(self, prompt: str) -> dict:
         torch = self._torch
-        prefix_ids = self.tokenizer(prompt, return_tensors="pt").input_ids.to(self.device)
-        scores = []
+        prefix_ids = self._encode(prompt)
+        prefix_len = prefix_ids.shape[1]
+        with torch.inference_mode():
+            next_logprobs = torch.log_softmax(
+                self.model(prefix_ids).logits[0, -1].float(), dim=-1
+            )
+        word_scores = []
         for word in self.DECISION_WORDS:
-            cont_ids = self._decision_token_ids[word]
-            full_ids = torch.cat(
-                [prefix_ids[0], torch.tensor(cont_ids, device=self.device)]
-            ).unsqueeze(0)
-            with torch.inference_mode():
-                logits = self.model(full_ids).logits[0]
-            logprob = 0.0
-            prefix_len = prefix_ids.shape[1]
-            for i, tok_id in enumerate(cont_ids):
-                pos = prefix_len - 1 + i
-                logprob += torch.log_softmax(logits[pos].float(), dim=-1)[tok_id].item()
-            scores.append(logprob)
-        probs = torch.softmax(torch.tensor(scores), dim=0).tolist()
+            variant_logprobs = []
+            for seq in self._decision_variants[word]:
+                logprob = next_logprobs[seq[0]].item()
+                if len(seq) > 1:  # multi-token surface form: one extra pass
+                    full_ids = torch.cat(
+                        [prefix_ids[0], torch.tensor(seq, device=self.device)]
+                    ).unsqueeze(0)
+                    with torch.inference_mode():
+                        logits = self.model(full_ids).logits[0]
+                    for i, tok_id in enumerate(seq[1:], start=1):
+                        pos = prefix_len - 1 + i
+                        logprob += torch.log_softmax(logits[pos].float(), dim=-1)[tok_id].item()
+                variant_logprobs.append(logprob)
+            word_scores.append(torch.logsumexp(torch.tensor(variant_logprobs), dim=0).item())
+        probs = torch.softmax(torch.tensor(word_scores), dim=0).tolist()
         return dict(zip(self.DECISION_WORDS, probs))
 
+    # -- citation ----------------------------------------------------------
     def _select_cited_sentence(
-        self, prompt: str, decision: str, evidence_sentences: list[str], question: str
+        self, decision_messages: list, decision: str, evidence_sentences: list[str], question: str
     ) -> str:
-        """Ask the model to pick a sentence NUMBER (never free text) from
-        the real evidence sentences, and map that number back to the
-        exact string. Falls back to lexical overlap if the model doesn't
-        return a valid in-range number, so the cited sentence is always
-        verbatim -- the model can pick badly, but it cannot fabricate a
-        quote that doesn't exist in the evidence.
-        """
         if not evidence_sentences:
             return ""
         torch = self._torch
-        numbered = "\n".join(f"{i + 1}. {s}" for i, s in enumerate(evidence_sentences))
-        select_prompt = (
-            prompt
-            + f" {decision}\n\nEvidence sentences:\n{numbered}\n\n"
-            "Which numbered sentence above most directly supports this "
-            "answer? Reply with only the number."
-        )
-        inputs = self.tokenizer(select_prompt, return_tensors="pt").to(self.device)
+        prompt = self._render(citation_messages(decision_messages, decision, evidence_sentences))
+        input_ids = self._encode(prompt)
         with torch.inference_mode():
             out_ids = self.model.generate(
-                **inputs, max_new_tokens=6, do_sample=False,
-                pad_token_id=self.tokenizer.eos_token_id,
+                input_ids=input_ids,
+                attention_mask=torch.ones_like(input_ids),
+                max_new_tokens=6,
+                do_sample=False,
+                pad_token_id=self.tokenizer.pad_token_id or self.tokenizer.eos_token_id,
             )
-        new_tokens = out_ids[0][inputs["input_ids"].shape[1] :]
-        reply = self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
-        match = re.search(r"\d+", reply)
-        if match:
-            idx = int(match.group()) - 1
-            if 0 <= idx < len(evidence_sentences):
-                return evidence_sentences[idx]
+        reply = self.tokenizer.decode(out_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
+        idx = parse_sentence_choice(reply, len(evidence_sentences))
+        if idx is not None:
+            return evidence_sentences[idx]
         return best_matching_sentence(set(tokenize(question)), evidence_sentences)
 
     def generate(
         self, question: str, doc_id: str, evidence_text: str, evidence_sentences: list[str]
     ) -> GenerationResult:
-        prompt = self._build_prompt(question, evidence_text)
-        probs = self._decision_distribution(prompt)
+        messages = build_messages(question, evidence_text, self.max_evidence_chars)
+        probs = self._decision_distribution(self._render(messages))
         decision = max(probs, key=probs.get)
-        confidence = probs[decision]
         cited_sentence = self._select_cited_sentence(
-            prompt, decision, evidence_sentences, question
-        )
-        answer_text = (
-            f"{decision.capitalize()}. Evidence: \"{cited_sentence}\" (source: {doc_id})"
+            messages, decision, evidence_sentences, question
         )
         return GenerationResult(
-            answer_text=answer_text,
+            answer_text=format_answer(decision, cited_sentence, doc_id),
             decision=decision,
-            confidence=confidence,
+            confidence=probs[decision],
             class_probs=probs,
             cited_doc_id=doc_id,
             cited_sentence=cited_sentence,

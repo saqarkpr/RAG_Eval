@@ -8,7 +8,7 @@
     "top1_id": "2501.09136",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.7614755328331552
+    "confidence": 0.7614754969818799
   },
   {
     "qid": "q002",
@@ -19,7 +19,7 @@
     "top1_id": "2402.19473",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.48802892809111964
+    "confidence": 0.4880289440846098
   },
   {
     "qid": "q003",
@@ -30,7 +30,7 @@
     "top1_id": "2504.13079",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.5135775657956961
+    "confidence": 0.5135775214779082
   },
   {
     "qid": "q004",
@@ -41,7 +41,7 @@
     "top1_id": "2005.11401",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.3641821004331386
+    "confidence": 0.3641822039401083
   },
   {
     "qid": "q005",
@@ -52,7 +52,7 @@
     "top1_id": "2410.12837",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.4654806147857621
+    "confidence": 0.4654806169448397
   },
   {
     "qid": "q006",
@@ -63,7 +63,7 @@
     "top1_id": "2312.10997",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.5215198801420748
+    "confidence": 0.5215198681628636
   },
   {
     "qid": "q007",
@@ -74,7 +74,7 @@
     "top1_id": "2503.15850",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.4716338095236335
+    "confidence": 0.4716336501877675
   },
   {
     "qid": "q008",
@@ -85,7 +85,7 @@
     "top1_id": "2505.23854",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.9198862392511936
+    "confidence": 0.919886238940971
   },
   {
     "qid": "q009",
@@ -96,7 +96,7 @@
     "top1_id": "2602.00279",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.5589672168723696
+    "confidence": 0.5589672168777989
   },
   {
     "qid": "q010",
@@ -107,7 +107,7 @@
     "top1_id": "2511.10645",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.8022053050132286
+    "confidence": 0.8022053095489824
   },
   {
     "qid": "q011",
@@ -118,7 +118,7 @@
     "top1_id": "2408.08554",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.7362126398566529
+    "confidence": 0.7362125248566059
   },
   {
     "qid": "q012",
@@ -129,7 +129,7 @@
     "top1_id": "2405.17849",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.6646227997225633
+    "confidence": 0.6646232158567406
   },
   {
     "qid": "q013",
@@ -140,7 +140,7 @@
     "top1_id": "2411.16158",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.7404750158680944
+    "confidence": 0.740475012084747
   },
   {
     "qid": "q014",
@@ -151,7 +151,7 @@
     "top1_id": "2607.10476",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.6270931607607952
+    "confidence": 0.6270931696722067
   },
   {
     "qid": "q015",
@@ -162,7 +162,7 @@
     "top1_id": "2502.15844",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.4113820222556551
+    "confidence": 0.4113815527741263
   },
   {
     "qid": "q016",
@@ -173,7 +173,7 @@
     "top1_id": "2512.20949",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.8223998123519214
+    "confidence": 0.8223998091929936
   },
   {
     "qid": "q017",
@@ -184,7 +184,7 @@
     "top1_id": "2601.09929",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.3113130176945317
+    "confidence": 0.31131297553384873
   },
   {
     "qid": "q018",
@@ -195,7 +195,7 @@
     "top1_id": "2507.22915",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.7781865981330618
+    "confidence": 0.7781865133830039
   },
   {
     "qid": "q019",
@@ -206,7 +206,7 @@
     "top1_id": "2311.05232",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.3881458937287965
+    "confidence": 0.38814611149367934
   },
   {
     "qid": "q020",
@@ -217,7 +217,7 @@
     "top1_id": "2212.07677",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.8624130940031097
+    "confidence": 0.8624130939870953
   },
   {
     "qid": "q021",
@@ -228,7 +228,7 @@
     "top1_id": "2503.15579",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.49679849120950526
+    "confidence": 0.4967985587843667
   },
   {
     "qid": "q022",
@@ -239,7 +239,7 @@
     "top1_id": "2406.13493",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.4447988256297983
+    "confidence": 0.44479882562971
   },
   {
     "qid": "q023",
@@ -250,7 +250,7 @@
     "top1_id": "2404.13846",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.4605881717435255
+    "confidence": 0.4605880827555167
   },
   {
     "qid": "q024",
@@ -261,7 +261,7 @@
     "top1_id": "2305.18290",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.5140620810254899
+    "confidence": 0.5140620810295647
   },
   {
     "qid": "q025",
@@ -272,7 +272,7 @@
     "top1_id": "2402.03300",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.5181727330054552
+    "confidence": 0.5181726747276691
   },
   {
     "qid": "q026",
@@ -283,7 +283,7 @@
     "top1_id": "2004.04906",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.6846289941641694
+    "confidence": 0.6846289915962044
   },
   {
     "qid": "q027",
@@ -294,7 +294,7 @@
     "top1_id": "2007.00808",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.8427324939015491
+    "confidence": 0.8427324939013664
   },
   {
     "qid": "q028",
@@ -305,7 +305,7 @@
     "top1_id": "2508.09497",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.28868170936352716
+    "confidence": 0.2886817730400608
   },
   {
     "qid": "q029",
@@ -316,7 +316,7 @@
     "top1_id": "2308.10792",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.7995489191978523
+    "confidence": 0.7995489283844488
   },
   {
     "qid": "q030",
@@ -327,7 +327,7 @@
     "top1_id": "2310.13385",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.7219980266417072
+    "confidence": 0.7219980266461303
   },
   {
     "qid": "q031",
@@ -338,7 +338,7 @@
     "top1_id": "2503.23714",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.5609241916464713
+    "confidence": 0.5609241435134473
   },
   {
     "qid": "q032",
@@ -349,7 +349,7 @@
     "top1_id": "2505.18642",
     "predicted_answer_type": "yes_no",
     "predicted_value": "Yes",
-    "confidence": 0.7756393121993488
+    "confidence": 0.775639311053324
   },
   {
     "qid": "q033",
@@ -360,7 +360,7 @@
     "top1_id": "2502.18001",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.5446341249765767
+    "confidence": 0.5446341254421758
   },
   {
     "qid": "q034",
@@ -371,7 +371,7 @@
     "top1_id": "2306.14050",
     "predicted_answer_type": "yes_no",
     "predicted_value": "No",
-    "confidence": 0.7166240417656794
+    "confidence": 0.7166240417688149
   },
   {
     "qid": "q035",
@@ -382,7 +382,7 @@
     "top1_id": "2504.13079",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.6876202563740741
+    "confidence": 0.6876205487134363
   },
   {
     "qid": "q036",
@@ -393,7 +393,7 @@
     "top1_id": "2005.11401",
     "predicted_answer_type": "extractive",
     "predicted_value": "Retrieval-Augmented",
-    "confidence": 0.5475934742247625
+    "confidence": 0.5475924338979179
   },
   {
     "qid": "q037",
@@ -404,7 +404,7 @@
     "top1_id": "2505.23854",
     "predicted_answer_type": "extractive",
     "predicted_value": "LVU",
-    "confidence": 0.6003400102744119
+    "confidence": 0.6003403358552989
   },
   {
     "qid": "q038",
@@ -415,7 +415,7 @@
     "top1_id": "2602.00279",
     "predicted_answer_type": "extractive",
     "predicted_value": "Long-Form",
-    "confidence": 0.6978474562911451
+    "confidence": 0.6978474562840744
   },
   {
     "qid": "q039",
@@ -426,7 +426,7 @@
     "top1_id": "2511.10645",
     "predicted_answer_type": "extractive",
     "predicted_value": "ParoQuant",
-    "confidence": 0.6685900836344395
+    "confidence": 0.6685901481357385
   },
   {
     "qid": "q040",
@@ -437,7 +437,7 @@
     "top1_id": "2408.08554",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.8878663290187849
+    "confidence": 0.8878664187345546
   },
   {
     "qid": "q041",
@@ -448,7 +448,7 @@
     "top1_id": "2405.17849",
     "predicted_answer_type": "extractive",
     "predicted_value": "I-LLM",
-    "confidence": 0.7785197417370326
+    "confidence": 0.7785197417332766
   },
   {
     "qid": "q042",
@@ -459,7 +459,7 @@
     "top1_id": "2411.16158",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.5152879021644539
+    "confidence": 0.5152878125366628
   },
   {
     "qid": "q043",
@@ -470,7 +470,7 @@
     "top1_id": "2507.22915",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.9841556989628337
+    "confidence": 0.9841556950759263
   },
   {
     "qid": "q044",
@@ -481,7 +481,7 @@
     "top1_id": "2502.15844",
     "predicted_answer_type": "extractive",
     "predicted_value": "MetaQA",
-    "confidence": 0.6317855526537726
+    "confidence": 0.6317855526524548
   },
   {
     "qid": "q045",
@@ -492,7 +492,7 @@
     "top1_id": "2512.20949",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.8056370440530389
+    "confidence": 0.8056370440544244
   },
   {
     "qid": "q046",
@@ -503,7 +503,7 @@
     "top1_id": "2601.09929",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.8028424655919071
+    "confidence": 0.802842465591448
   },
   {
     "qid": "q047",
@@ -514,7 +514,7 @@
     "top1_id": "2507.22915",
     "predicted_answer_type": "extractive",
     "predicted_value": "PAC-Bayes",
-    "confidence": 0.5469031037434037
+    "confidence": 0.5469025386935766
   },
   {
     "qid": "q048",
@@ -525,7 +525,7 @@
     "top1_id": "2212.07677",
     "predicted_answer_type": "extractive",
     "predicted_value": "",
-    "confidence": 0.6407839924208666
+    "confidence": 0.6407837441930854
   },
   {
     "qid": "q049",
@@ -536,7 +536,7 @@
     "top1_id": "2503.15579",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.5467517385805264
+    "confidence": 0.5467525887888196
   },
   {
     "qid": "q050",
@@ -547,7 +547,7 @@
     "top1_id": "2406.13493",
     "predicted_answer_type": "extractive",
     "predicted_value": "In-Context",
-    "confidence": 0.9159322038827746
+    "confidence": 0.9159326388071479
   },
   {
     "qid": "q051",
@@ -558,7 +558,7 @@
     "top1_id": "2404.13846",
     "predicted_answer_type": "extractive",
     "predicted_value": "DPO",
-    "confidence": 0.5327532086335363
+    "confidence": 0.5327535270556945
   },
   {
     "qid": "q052",
@@ -569,7 +569,7 @@
     "top1_id": "2305.18290",
     "predicted_answer_type": "extractive",
     "predicted_value": "DPO",
-    "confidence": 0.807573839423572
+    "confidence": 0.8075738337163477
   },
   {
     "qid": "q053",
@@ -580,7 +580,7 @@
     "top1_id": "2402.03300",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.8636342480784137
+    "confidence": 0.8636342996366347
   },
   {
     "qid": "q054",
@@ -591,7 +591,7 @@
     "top1_id": "2004.04906",
     "predicted_answer_type": "extractive",
     "predicted_value": "Open-Domain",
-    "confidence": 0.5323863477866159
+    "confidence": 0.5323858376405984
   },
   {
     "qid": "q055",
@@ -602,7 +602,7 @@
     "top1_id": "2007.00808",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.6588240138718908
+    "confidence": 0.6588240138722854
   },
   {
     "qid": "q056",
@@ -613,7 +613,7 @@
     "top1_id": "2508.09497",
     "predicted_answer_type": "extractive",
     "predicted_value": "DPS",
-    "confidence": 0.8419275810861732
+    "confidence": 0.8419275880399016
   },
   {
     "qid": "q057",
@@ -624,7 +624,7 @@
     "top1_id": "2310.13385",
     "predicted_answer_type": "extractive",
     "predicted_value": "LLaMA",
-    "confidence": 0.6588135355308703
+    "confidence": 0.6588136623883488
   },
   {
     "qid": "q058",
@@ -635,7 +635,7 @@
     "top1_id": "2503.23714",
     "predicted_answer_type": "extractive",
     "predicted_value": "Instruction-Tuning",
-    "confidence": 0.7858603893523203
+    "confidence": 0.7858603893593987
   },
   {
     "qid": "q059",
@@ -646,7 +646,7 @@
     "top1_id": "2505.18642",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.6297726634494415
+    "confidence": 0.6297726606524786
   },
   {
     "qid": "q060",
@@ -657,7 +657,7 @@
     "top1_id": "2502.18001",
     "predicted_answer_type": "extractive",
     "predicted_value": "CoT",
-    "confidence": 0.6921017200906642
+    "confidence": 0.692101668821413
   },
   {
     "qid": "q061",
@@ -668,7 +668,7 @@
     "top1_id": "2306.14050",
     "predicted_answer_type": "extractive",
     "predicted_value": "Chain-of-Thought",
-    "confidence": 0.46308945811988256
+    "confidence": 0.4630897319038991
   },
   {
     "qid": "q062",
@@ -679,7 +679,7 @@
     "top1_id": "2404.13846",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.9818331259799677
+    "confidence": 0.9818331259802842
   },
   {
     "qid": "q063",
@@ -690,7 +690,7 @@
     "top1_id": "2502.15844",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.9523074650913083
+    "confidence": 0.9523074650913352
   },
   {
     "qid": "q064",
@@ -701,7 +701,7 @@
     "top1_id": "2004.04906",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.7055819304297544
+    "confidence": 0.7055822569422563
   },
   {
     "qid": "q065",
@@ -712,7 +712,7 @@
     "top1_id": "2402.03300",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.7974643989946304
+    "confidence": 0.7974643989969585
   },
   {
     "qid": "q066",
@@ -723,7 +723,7 @@
     "top1_id": "2005.11401",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.9116247876491805
+    "confidence": 0.9116246278981454
   },
   {
     "qid": "q067",
@@ -734,7 +734,7 @@
     "top1_id": "2511.10645",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.6959490141796282
+    "confidence": 0.6959489780016779
   },
   {
     "qid": "q068",
@@ -745,7 +745,7 @@
     "top1_id": "2411.16158",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.8883194926388368
+    "confidence": 0.8883194737637949
   },
   {
     "qid": "q069",
@@ -756,7 +756,7 @@
     "top1_id": "2512.20949",
     "predicted_answer_type": "extractive",
     "predicted_value": "MLP",
-    "confidence": 0.8440740171814148
+    "confidence": 0.8440740171789473
   },
   {
     "qid": "q070",
@@ -767,7 +767,7 @@
     "top1_id": "2505.18642",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.9180435404175029
+    "confidence": 0.9180435896052925
   },
   {
     "qid": "q071",
@@ -778,7 +778,7 @@
     "top1_id": "2404.13846",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.9210556212768112
+    "confidence": 0.9210555672325833
   },
   {
     "qid": "q072",
@@ -789,7 +789,7 @@
     "top1_id": "2405.17849",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.6410327177644318
+    "confidence": 0.6410336658836717
   },
   {
     "qid": "q073",
@@ -800,7 +800,7 @@
     "top1_id": "2505.23854",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.8950515219868285
+    "confidence": 0.8950512884981605
   },
   {
     "qid": "q074",
@@ -811,7 +811,7 @@
     "top1_id": "2306.14050",
     "predicted_answer_type": "extractive",
     "predicted_value": "Chain-of-Thought",
-    "confidence": 0.6890513034413509
+    "confidence": 0.6890513177499478
   },
   {
     "qid": "q075",
@@ -822,7 +822,7 @@
     "top1_id": "2508.09497",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.5141014888099411
+    "confidence": 0.5141014888096291
   },
   {
     "qid": "q076",
@@ -833,7 +833,7 @@
     "top1_id": "2310.13385",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.9545664676913478
+    "confidence": 0.9545664676913569
   },
   {
     "qid": "q077",
@@ -844,6 +844,6 @@
     "top1_id": "2308.10792",
     "predicted_answer_type": "unanswerable",
     "predicted_value": null,
-    "confidence": 0.628433796485438
+    "confidence": 0.6284335410580997
   }
 ]

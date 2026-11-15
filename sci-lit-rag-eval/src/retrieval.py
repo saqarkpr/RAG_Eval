@@ -8,7 +8,9 @@
 Both expose the same .retrieve(query, k) -> List[(arxiv_id, score)] interface
 so downstream code (generator, evaluation) is retriever-agnostic.
 """
+import sys
 import time
+
 import numpy as np
 from rank_bm25 import BM25Okapi
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -38,7 +40,6 @@ class BM25Retriever:
     def approx_memory_bytes(self):
         # rank_bm25 keeps per-doc term frequency dicts + doc freqs; approximate
         # footprint via the size of those structures.
-        import sys
         total = sys.getsizeof(self.model.doc_freqs)
         for d in self.model.doc_freqs:
             total += sys.getsizeof(d)
@@ -60,7 +61,10 @@ class TfidfLsaRetriever:
             tokenizer=tokenize, lowercase=False, token_pattern=None, min_df=1
         )
         tfidf = self.vectorizer.fit_transform(texts)
-        n_comp = min(n_components, min(tfidf.shape) - 1)
+        # TruncatedSVD needs n_components strictly below both the number of
+        # documents and the vocabulary size.
+        n_comp = max(1, min(n_components, min(tfidf.shape) - 1))
+        self.n_components = n_comp
         self.svd = TruncatedSVD(n_components=n_comp, random_state=random_state)
         self.doc_vecs = self.svd.fit_transform(tfidf)
         self.build_time_s = time.perf_counter() - t0
@@ -82,5 +86,9 @@ RETRIEVERS = {
 }
 
 
-def build_retriever(name, docs):
-    return RETRIEVERS[name](docs)
+def build_retriever(name, docs, **kwargs):
+    """Instantiate a retriever by name. Extra keyword arguments (e.g.
+    n_components for tfidf_lsa) are passed to its constructor."""
+    if name not in RETRIEVERS:
+        raise ValueError(f"unknown retriever {name!r}; choose from {sorted(RETRIEVERS)}")
+    return RETRIEVERS[name](docs, **kwargs)

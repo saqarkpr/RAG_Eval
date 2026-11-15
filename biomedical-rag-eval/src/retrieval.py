@@ -40,6 +40,8 @@ class BM25Retriever:
     name = "bm25"
 
     def __init__(self, doc_ids: list[str], texts: list[str]):
+        if len(doc_ids) != len(texts):
+            raise ValueError("doc_ids and texts must have the same length")
         self.doc_ids = doc_ids
         tokenized = [tokenize(t) for t in texts]
         self._index = BM25Okapi(tokenized)
@@ -59,14 +61,37 @@ class BM25Retriever:
 class LsaRetriever:
     name = "tfidf_lsa"
 
-    def __init__(self, doc_ids: list[str], texts: list[str], n_components: int = 128):
+    def __init__(
+        self,
+        doc_ids: list[str],
+        texts: list[str],
+        n_components: int = 128,
+        min_df: int = 2,
+        random_state: int = 42,
+    ):
+        if len(doc_ids) != len(texts):
+            raise ValueError("doc_ids and texts must have the same length")
         self.doc_ids = doc_ids
-        n_components = min(n_components, len(texts) - 1, 300)
         self.vectorizer = TfidfVectorizer(
-            tokenizer=tokenize, lowercase=False, min_df=2, max_df=0.9
+            tokenizer=tokenize, lowercase=False, token_pattern=None, min_df=min_df, max_df=0.9
         )
-        tfidf = self.vectorizer.fit_transform(texts)
-        self.svd = TruncatedSVD(n_components=n_components, random_state=42)
+        try:
+            tfidf = self.vectorizer.fit_transform(texts)
+        except ValueError as e:  # sklearn: "After pruning, no terms remain" / empty vocabulary
+            tfidf = None
+            cause = e
+        if tfidf is None or tfidf.shape[1] < 2:
+            n_terms = 0 if tfidf is None else tfidf.shape[1]
+            raise ValueError(
+                f"LsaRetriever: only {n_terms} vocabulary term(s) survived "
+                f"min_df={min_df}/max_df filtering; the corpus is too small or too "
+                "homogeneous for LSA (lower min_df or use BM25Retriever)."
+            ) from (cause if tfidf is None else None)
+        # TruncatedSVD needs n_components strictly below both the number of
+        # documents and the vocabulary size.
+        n_components = max(1, min(n_components, len(texts) - 1, tfidf.shape[1] - 1, 300))
+        self.n_components = n_components
+        self.svd = TruncatedSVD(n_components=n_components, random_state=random_state)
         self.doc_vecs = self.svd.fit_transform(tfidf)
         norms = np.linalg.norm(self.doc_vecs, axis=1, keepdims=True)
         self._doc_vecs_norm = self.doc_vecs / np.clip(norms, 1e-8, None)

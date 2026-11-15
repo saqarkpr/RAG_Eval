@@ -109,6 +109,13 @@ python train.py --retriever tfidf_lsa --seed 42
 python evaluate.py
 ```
 
+`configs/default.yaml` holds the settings behind the reported numbers
+(retriever, seed, top-k, CV folds, ECE bins, LSA dimensionality, data
+paths); both scripts read it, and every CLI flag overrides the matching
+entry (`--config other.yaml` swaps the whole file, `--results-dir` writes
+somewhere other than `results/`). `train.py` also records the settings it
+actually used in `results/run_config_<retriever>.json`.
+
 `scripts/slurm.sh` is an `sbatch` wrapper around the same commands. The
 job is deliberately submitted to a CPU partition with a 2-minute-scale
 time budget -- see the comment in that file for why (this pipeline has no
@@ -132,8 +139,9 @@ GPU-bound step).
 
 **Robustness probe (negation flip test):** of 34 yes/no questions, negating
 a question's polarity flipped the classifier's answer only **38.2%**
-(13/34) of the time, trained on all data as a diagnostic (not a held-out
-generalization estimate). A logically sound yes/no classifier should flip
+(13/34) of the time. For this probe the Stage-C yes/no classifier is fit
+on all 34 yes/no items with BM25 features, as a diagnostic (not a
+held-out generalization estimate). A logically sound yes/no classifier should flip
 on nearly all of these -- negating the question negates the correct
 answer by construction. This low rate is a genuine, reproducible finding:
 the classifier is picking up surface negation *cue words* (e.g. "not",
@@ -197,6 +205,31 @@ is reported here rather than smoothed over.
   clusters rather than depth within one -- appropriate for a portfolio
   demonstration, not for a production literature-QA system.
 - **The negation-robustness probe is a diagnostic, not a generalization
-  estimate**: it trains on all 77 items with no held-out split, because
-  its purpose is to interrogate what the fitted classifier is (not)
-  sensitive to, not to estimate accuracy on new data.
+  estimate**: it fits the yes/no classifier on all 34 yes/no items with
+  no held-out split, because its purpose is to interrogate what the
+  fitted classifier is (not) sensitive to, not to estimate accuracy on
+  new data. The negated paraphrase also drops the leading auxiliary verb
+  without re-conjugating ("Is it NOT the case that DPR use ..."), on
+  purpose, so every content word stays identical between the two
+  versions.
+
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest -v
+ruff check .
+```
+
+40 tests (`tests/`) cover tokenization and config loading
+(`test_data_utils.py`), both retrievers plus Recall@k/MRR and the latency
+benchmark on a four-paper toy corpus with a known answer per query
+(`test_retrieval.py`), the acronym/method-name span extractor, fuzzy
+matching and the retrieval-derived feature vector (`test_generator.py`),
+known-answer cases for ECE, Brier, hallucination, false-abstention and
+evidence-grounding rates (`test_evaluate_trust.py`), and the whole
+cascade end to end: `train.py` under 2-fold CV for both retrievers, then
+`evaluate.py` with its report, reliability diagrams and negation probe,
+all written to a temporary directory (`test_pipeline.py`). The GitHub
+Actions workflow at the repository root (`.github/workflows/tests.yml`)
+runs the suite, the linter and `scripts/train.sh` on every push.

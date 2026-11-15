@@ -5,7 +5,6 @@ and generation_results_llm.csv). Re-run this any time either table
 changes so the figure never drifts out of sync with the numbers in the
 text.
 """
-import sys
 from pathlib import Path
 
 import matplotlib
@@ -17,15 +16,33 @@ import pandas as pd
 
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "results"
 CONDITIONS = ["no_context", "gold_context", "bm25_context"]
-LABELS = {"no_context": "No context", "gold_context": "Gold context", "bm25_context": "BM25 context"}
+# Fraction of the 200-item test split whose gold decision is "yes" (the
+# majority class); recomputed from generation_per_query.csv when available.
+MAJORITY_RATE = 0.505
+LABELS = {
+    "no_context": "No context",
+    "gold_context": "Gold context",
+    "bm25_context": "BM25 context",
+}
 
 
 def main():
-    classical = pd.read_csv(RESULTS_DIR / "tables" / "generation_results.csv").set_index("condition")
-    llm = pd.read_csv(RESULTS_DIR / "tables" / "generation_results_llm.csv").set_index("condition")
+    tables = RESULTS_DIR / "tables"
+    classical = pd.read_csv(tables / "generation_results.csv").set_index("condition")
+    llm = pd.read_csv(tables / "generation_results_llm.csv").set_index("condition")
+    model_name = str(llm["model"].iloc[0]) if "model" in llm.columns else "LLM"
+    llm_label = model_name.split("/")[-1]
 
     x = np.arange(len(CONDITIONS))
     width = 0.35
+
+    per_query_path = tables / "generation_per_query.csv"
+    majority_rate = MAJORITY_RATE
+    if per_query_path.exists():
+        pq = pd.read_csv(per_query_path)
+        gold = pq[pq["condition"] == "gold_context"]["gold_decision"]
+        if len(gold):
+            majority_rate = float(gold.value_counts(normalize=True).max())
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.2))
 
@@ -44,9 +61,11 @@ def main():
     )
     ax.bar(
         x + width / 2, l_acc, width, yerr=[l_acc - l_lo, l_hi - l_acc],
-        capsize=4, label="Qwen2.5-1.5B-Instruct", color="#d98c4a",
+        capsize=4, label=llm_label, color="#d98c4a",
     )
-    ax.axhline(0.505, color="gray", linestyle="--", linewidth=1, label="Majority-class baseline")
+    ax.axhline(
+        majority_rate, color="gray", linestyle="--", linewidth=1, label="Majority-class baseline"
+    )
     ax.set_xticks(x)
     ax.set_xticklabels([LABELS[c] for c in CONDITIONS])
     ax.set_ylabel("Accuracy")
@@ -61,8 +80,8 @@ def main():
 
     ax.plot(x, c_acc, "o-", color="#6b8fbf", label="Classical: accuracy")
     ax.plot(x, c_conf, "o--", color="#6b8fbf", alpha=0.6, label="Classical: confidence")
-    ax.plot(x, l_acc, "s-", color="#d98c4a", label="Qwen: accuracy")
-    ax.plot(x, l_conf, "s--", color="#d98c4a", alpha=0.6, label="Qwen: confidence")
+    ax.plot(x, l_acc, "s-", color="#d98c4a", label=f"{llm_label}: accuracy")
+    ax.plot(x, l_conf, "s--", color="#d98c4a", alpha=0.6, label=f"{llm_label}: confidence")
     ax.set_xticks(x)
     ax.set_xticklabels([LABELS[c] for c in CONDITIONS])
     ax.set_ylabel("Value")
@@ -72,6 +91,7 @@ def main():
 
     fig.tight_layout()
     out_path = RESULTS_DIR / "figures" / "classical_vs_llm_summary.png"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=150)
     print(f"Wrote {out_path}")
 

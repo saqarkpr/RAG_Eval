@@ -37,6 +37,20 @@ def test_accuracy_basic():
     assert accuracy(["a"], ["a"]) == 1.0
 
 
+def test_accuracy_rejects_length_mismatch():
+    import pytest
+
+    with pytest.raises(ValueError):
+        accuracy(["a", "b"], ["a"])
+
+
+def test_bootstrap_ci_rejects_empty_input():
+    import pytest
+
+    with pytest.raises(ValueError):
+        bootstrap_ci([])
+
+
 def test_bootstrap_ci_mean_matches_plain_mean():
     values = [1, 0, 1, 1, 0, 1, 1, 0]
     mean, lo, hi = bootstrap_ci(values, n_boot=500, seed=42)

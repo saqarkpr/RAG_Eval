@@ -1,0 +1,19 @@
+[project]
+name = "sci-lit-rag-eval"
+version = "0.1.0"
+description = "Trustworthy, LLM-free retrieval-augmented QA over arXiv abstracts: calibration, abstention and evidence grounding, not just accuracy."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+# Same small rule set as biomedical-rag-eval: real bugs (unused
+# imports/names, undefined names) and basic style, not a large surface.
+select = ["E", "F", "W"]

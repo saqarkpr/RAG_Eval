@@ -24,7 +24,10 @@ NEGATION_CUES = [
     "single reasoning", "entire long", "full before",
 ]
 
-AUX_START_RE = re.compile(r"^(does|is|did|has|do|isn't|doesn't|didn't)\b", re.I)
+AUX_START_RE = re.compile(
+    r"^(does|is|did|has|do|are|was|were|can|could|will|should|isn't|doesn't|didn't)\b",
+    re.IGNORECASE,
+)
 
 ACRONYM_STOPLIST = {
     "llm", "llms", "ai", "nlp", "rag", "gpu", "gpus", "rl", "ppo", "rlhf",
@@ -81,7 +84,10 @@ def fuzzy_match(pred: str, gold: str) -> bool:
 
 
 def extract_features(question: str, retrieved, docs_by_id):
-    """retrieved: list of (arxiv_id, score), already sorted desc, len>=1."""
+    """retrieved: list of (arxiv_id, score), already sorted desc, len>=1.
+    Returns (feature_vector in FEATURE_NAMES order, top1 arxiv_id)."""
+    if not retrieved:
+        raise ValueError("extract_features needs at least one retrieved document")
     top1_id, top1_score = retrieved[0]
     top2_score = retrieved[1][1] if len(retrieved) > 1 else 0.0
     scores = [s for _, s in retrieved]

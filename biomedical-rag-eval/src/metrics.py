@@ -2,6 +2,8 @@
 calibration (ECE/Brier), and a lexical faithfulness/support check used as
 a hallucination-risk proxy.
 """
+import re
+
 import numpy as np
 
 
@@ -17,7 +19,8 @@ def reciprocal_rank(gold_doc_id: str, retrieved_doc_ids: list[str]) -> float:
 
 
 def accuracy(y_true: list, y_pred: list) -> float:
-    assert len(y_true) == len(y_pred)
+    if len(y_true) != len(y_pred):
+        raise ValueError("y_true and y_pred must have the same length")
     return float(np.mean([a == b for a, b in zip(y_true, y_pred)]))
 
 
@@ -29,6 +32,8 @@ def bootstrap_ci(values, n_boot: int = 1000, seed: int = 42):
     """
     rng = np.random.default_rng(seed)
     values = np.asarray(values, dtype=float)
+    if values.size == 0:
+        raise ValueError("bootstrap_ci needs at least one value")
     boots = [rng.choice(values, size=len(values), replace=True).mean() for _ in range(n_boot)]
     lo, hi = np.percentile(boots, [2.5, 97.5])
     return float(np.mean(values)), float(lo), float(hi)
@@ -88,16 +93,12 @@ def reliability_bins(confidences: np.ndarray, correct: np.ndarray, n_bins: int =
     return np.array(centers), np.array(accs), np.array(confs), np.array(counts)
 
 
-_WORD_RE = None
+_WORD_RE = re.compile(r"[a-zA-Z]{3,}")
 
 
 def _words(text: str) -> set[str]:
-    global _WORD_RE
-    if _WORD_RE is None:
-        import re
+    return {w.lower() for w in _WORD_RE.findall(text)}
 
-        _WORD_RE = re.compile(r"[a-zA-Z]{3,}")
-    return set(w.lower() for w in _WORD_RE.findall(text))
 
 _STOPWORDS = {
     "the", "and", "for", "was", "were", "with", "that", "this", "from", "have",

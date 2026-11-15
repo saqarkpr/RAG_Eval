@@ -1,4 +1,5 @@
-# Only needed to run tests/ locally or in CI -- not required to reproduce
-# any result in results/.
+# Only needed to run tests/ and the linter locally or in CI -- not required
+# to reproduce any result in results/.
 -r requirements.txt
 pytest>=7.0
+ruff>=0.4

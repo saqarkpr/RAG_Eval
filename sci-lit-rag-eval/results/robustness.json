@@ -1,6 +1,7 @@
 {
+  "retriever": "bm25",
   "n_probed": 34,
   "n_flipped_on_negation": 13,
   "negation_flip_rate": 0.38235294117647056,
-  "note": "Diagnostic probe trained on all 77 items (not held out); measures whether the yes/no classifier's decision flips when a question's logical polarity is negated. A LOGICALLY SOUND classifier should flip on (nearly) every item, since negating the question's polarity negates the correct answer; a low flip rate means the classifier is tracking surface lexical cues rather than semantic polarity."
+  "note": "Diagnostic probe: the Stage-C yes/no classifier is fit on all 34 yes/no items (not held out) using bm25 retrieval features, then each question is negated ('Is it NOT the case that ...?') and re-scored. It measures whether the classifier's decision flips when a question's logical polarity is negated. A LOGICALLY SOUND classifier should flip on (nearly) every item, since negating the question negates the correct answer; a low flip rate means the classifier is tracking surface lexical cues rather than semantic polarity."
 }

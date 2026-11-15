@@ -35,6 +35,14 @@ scripts/download_data.py   # fetches ori_pqal.json from the public GitHub repo
 scripts/prepare_data.py    # builds corpus.jsonl + train/dev/test.jsonl
 ```
 
+Each corpus document keeps the full abstract (`text`, the evidence string
+used for retrieval and generation), the original section paragraphs
+(`contexts`, aligned with `sections`), and the abstract split into
+individual sentences (`sentences`, about 10 per abstract). Generators cite
+from `sentences`, so a citation is one real sentence rather than a whole
+section paragraph. The resulting test split has 101 "yes", 72 "no" and 27
+"maybe" items, so the majority-class rate is 0.505.
+
 ## Pipeline
 
 ```
@@ -51,9 +59,10 @@ quality itself is a measured variable rather than assumed:
 **Generation** (`src/generator.py`): `ExtractiveClassifierGenerator` is a
 TF-IDF + logistic-regression classifier over `question [SEP] evidence`,
 trained on the train split, producing a probability over {yes, no, maybe}
-plus an extracted evidence sentence and an explicit source citation. It
-needs no downloaded weights, so every metric below is a real, run-today
-number rather than a projection.
+plus an extracted evidence sentence (the one with the highest lexical
+overlap with the question) and an explicit source citation. It needs no
+downloaded weights, so every metric below is a real, run-today number
+rather than a projection.
 
 **Evaluation** (`src/metrics.py`, `scripts/run_*_eval.py`):
 - Retrieval: Recall@{1,3,5,10}, MRR, indexing time, per-query latency —
@@ -138,11 +147,25 @@ baseline — same test set, same three conditions, same metric code, so the
 two tables below are apples-to-apples by construction. Two design choices
 keep it trustworthy-by-construction rather than just "prompt an LLM and
 hope": confidence is the model's own next-token log-probability for
-"yes"/"no"/"maybe" (renormalized across just those three), not a
-verbalized self-report; and the citation is a sentence *number* the model
-picks from the real evidence sentences, mapped back to that exact string
-— never free-form generated text — so a citation is always verbatim or
-absent, never fabricated.
+"yes"/"no"/"maybe" (summed over each word's lowercase/capitalized and
+space/no-space surface forms, then renormalized across just those three
+words), not a verbalized self-report; and the citation is a sentence
+*number* the model picks from the real evidence sentences in a follow-up
+chat turn, mapped back to that exact string — never free-form generated
+text — so a citation is always verbatim or absent, never fabricated.
+
+*Note on the committed LLM numbers.* The tables and figures below come
+from the Colab run made with an earlier revision of `HFLocalLLMGenerator`,
+which scored only the leading-space lowercase token of each decision word
+and appended the citation request to the generation prompt as plain text.
+The current code scores all surface forms (ChatML templates such as
+Qwen's end the generation prompt with a newline, so the natural first
+token has no leading space) and asks for the citation as a proper
+multi-turn conversation. The decision metrics are therefore expected to
+move slightly on a re-run; the per-query `cited_sentence` column will
+also change because evidence is now sentence-split (it was
+paragraph-level in that run). Re-run `scripts/run_generation_eval_llm.py`
+to refresh them.
 
 ![Classical vs. LLM: accuracy and calibration](results/figures/classical_vs_llm_summary.png)
 
@@ -223,10 +246,14 @@ bash scripts/run_all.sh                        # offline: retrieval + classical 
 python scripts/plot_classical_vs_llm.py        # regenerate the comparison figure
 ```
 
-(equivalently: `make install data retrieval generation figure`)
+(equivalently: `make install all`)
 
-Runs in well under a minute on CPU. For the LLM generator (Colab, GPU
-recommended):
+Runs in well under a minute on CPU. `data/` is git-ignored and rebuilt by
+the first two steps of `run_all.sh`; the split is seeded, so the rebuilt
+`test.jsonl` is identical to the one the committed results were produced
+on. Every script takes `--data-dir` / `--results-dir` (and the generation
+scripts `--n-test`) for running on a subset or into a scratch directory.
+For the LLM generator (Colab or any GPU machine):
 
 ```bash
 pip install -r requirements-llm.txt
@@ -243,22 +270,29 @@ committed classical-pipeline results, for a fully deterministic re-run;
 ```bash
 pip install -r requirements-dev.txt
 pytest -v          # or: make install-dev test
+ruff check .       # or: make lint
 ```
 
-38 unit/integration tests (`tests/`) cover every module that runs in this
-offline sandbox: retrieval correctness on a synthetic corpus with known
-answers (`test_retrieval.py`), known-answer cases for every metric —
-perfect calibration → ECE 0, one-hot prediction → Brier 0, negation kept
-as a content word in `support_ratio` (`test_metrics.py`) — the classical
-generator's fit/predict contract and its verbatim-citation guarantee
-(`test_generator.py`), and the shared `evaluate_generator` loop end to
+67 unit/integration tests (`tests/`) cover every module that runs
+offline: retrieval correctness on a synthetic corpus with known answers,
+plus the LSA edge cases of a tiny corpus or vocabulary
+(`test_retrieval.py`); known-answer cases for every metric — perfect
+calibration → ECE 0, one-hot prediction → Brier 0, negation kept as a
+content word in `support_ratio` (`test_metrics.py`); the sentence
+splitter and the processed-data loader (`test_data.py`); the classical
+generator's fit/predict contract and its verbatim-citation guarantee, and
+the torch-free parts of the LLM generator — sentence-safe evidence
+truncation, the two prompts (including a regression test that the
+no-context prompt carries no "insufficient evidence" cue, see the bug
+record below), the citation follow-up turn, number parsing, and the
+enumeration of decision-word surface forms against a fake tokenizer
+(`test_generator.py`); and the shared `evaluate_generator` loop end to
 end, including that it raises loudly on a malformed probability vector
 rather than silently computing a meaningless calibration score
-(`test_eval_generation.py`). `HFLocalLLMGenerator` needs `torch`/
-`transformers` and is exercised on Colab instead (see above), so it's
-deliberately not imported by anything in `tests/` — CI never needs a GPU.
-A GitHub Actions workflow (`.github/workflows/tests.yml`) runs this suite
-on every push against Python 3.10 and 3.12.
+(`test_eval_generation.py`). Nothing in `tests/` imports `torch`, so CI
+never needs a GPU. The GitHub Actions workflow at the repository root
+(`.github/workflows/tests.yml`) runs this suite and the linter on every
+push against Python 3.10 and 3.12.
 
 ### A bug the first LLM run caught (kept as a record, not deleted)
 
@@ -318,8 +352,12 @@ scripts/
                           two generation_results*.csv tables
   run_all.sh              run the offline pipeline end-to-end
 src/
+  data.py            project paths, JSONL I/O, sentence splitter, and a
+                     processed-data loader shared by scripts/ and tests/
   retrieval.py       BM25Retriever, LsaRetriever
   generator.py       ExtractiveClassifierGenerator, HFLocalLLMGenerator
+                     (plus the torch-free prompt/truncation/token helpers
+                     the LLM generator is built from)
   metrics.py         recall@k, MRR, ECE, Brier, reliability bins, support
                      ratio, bootstrap_ci (shared by retrieval + generation)
   eval_generation.py shared no/gold/bm25-context eval loop used by BOTH
@@ -331,8 +369,9 @@ src/
                      class_probs, cited sentence) for error analysis, not
                      just the aggregate summary
 tests/               pytest suite for everything above that runs offline
-                     (retrieval, metrics, classical generator, the shared
-                     eval loop) -- see "Testing" above
+                     (data helpers, retrieval, metrics, classical
+                     generator, LLM prompt helpers, the shared eval loop)
+                     -- see "Testing" above
 results/
   tables/     retrieval_results.csv, retrieval_per_query.csv,
               generation_results.csv, generation_per_query.csv,

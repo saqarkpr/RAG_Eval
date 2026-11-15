@@ -20,15 +20,15 @@ def tokenize(text: str, drop_stopwords: bool = True):
 
 
 def load_corpus(path):
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         docs = json.load(f)
     for d in docs:
-        d["text"] = d["title"] + ". " + d["abstract"]
+        d["text"] = d["title"].strip() + ". " + d["abstract"].strip()
     return docs
 
 
 def load_qa(path):
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
